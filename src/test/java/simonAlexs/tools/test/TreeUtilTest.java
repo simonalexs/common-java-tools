@@ -1,4 +1,4 @@
-package simonAlexs.tools.zTest;
+package simonAlexs.tools.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -41,6 +41,8 @@ public class TreeUtilTest {
         log.info("myAllTimes平均耗时：" + (myAllTimes / runTimes));
         log.info("commonUseTimes平均耗时：" + (commonUseTimes / runTimes));
         log.info("******************************");
+//        StopWatchMulti.print();
+//        StopWatchMulti.print();
     }
 
     private static void filterSubNode(int runTimes, Map<Integer, JSONObject> map, int selectedArrayNums, int firstLength, int secondLength, int thirdLength) {

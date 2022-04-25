@@ -19,11 +19,19 @@ public class ConsolePrintTable {
     private String rowSeparator = "-";
     private String colSeparator = "    ";
     private int rowLength = 0;
+    private String tableTitle = "";
     private Map<String, ConsolePrintCellConfig> titleConfigs = new LinkedHashMap<>();
     private List<Map<String, Object>> datas = new LinkedList<>();
 
     public static ConsolePrintTable getInstance(){
-        return new ConsolePrintTable();
+        return new ConsolePrintTable("");
+    }
+    public static ConsolePrintTable getInstance(String tableTitle){
+        return new ConsolePrintTable(tableTitle);
+    }
+
+    private ConsolePrintTable(String tableTitle) {
+        this.tableTitle = tableTitle;
     }
 
     public ConsolePrintTable.Builder getBuilder(){
@@ -43,6 +51,11 @@ public class ConsolePrintTable {
         String tableSeparatorStr = tableSeparator.repeat(rowLength);
         result.append(tableSeparatorStr);
         result.append("\n");
+        // 添加标题
+        String tableTitleStr = tableSeparator.repeat(rowLength / 3) + tableTitle + tableSeparator.repeat(rowLength - rowLength / 3 - tableTitle.length());
+        result.append(tableTitleStr);
+        result.append("\n");
+
         result.append(titleResult);
         result.append("\n");
         result.append(titleSeparator.repeat(rowLength));
@@ -99,7 +112,7 @@ public class ConsolePrintTable {
 
         public class RowDataBuilder {
             Builder builder;
-            Map<String, Object> rowData = new HashMap<>();
+            public Map<String, Object> rowData = new HashMap<>();
 
             public RowDataBuilder(Builder builder) {
                 this.builder = builder;
