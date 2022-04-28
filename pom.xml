@@ -6,7 +6,19 @@
 
     <groupId>com.simonAlexs.tools</groupId>
     <artifactId>simon-alexs-tools</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
+
+
+    <!--
+    其他项目引用时，可采用此方式引用
+    <dependency>
+        <groupId>com.simonAlexs.tools</groupId>
+        <artifactId>simon-alexs-tools</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+        <scope>system</scope>
+        <systemPath>${project.basedir}/lib/simon-alexs-tools-1.0.0-SNAPSHOT.jar</systemPath>
+    </dependency>
+    -->
 
     <parent>
         <groupId>org.springframework.boot</groupId>
