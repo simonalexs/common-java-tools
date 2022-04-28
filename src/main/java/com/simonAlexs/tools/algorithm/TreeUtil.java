@@ -1,4 +1,4 @@
-package simonAlexs.tools.algorithm;
+package com.simonAlexs.tools.algorithm;
 
 import java.util.ArrayList;
 import java.util.Arrays;

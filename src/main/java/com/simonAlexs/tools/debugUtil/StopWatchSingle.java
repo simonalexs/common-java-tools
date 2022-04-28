@@ -1,7 +1,7 @@
-package simonAlexs.tools.debugUtil;
+package com.simonAlexs.tools.debugUtil;
 
-import simonAlexs.tools.common.ConsolePrintTable;
-import simonAlexs.tools.baseStruct.ConsolePrintCellConfig;
+import com.simonAlexs.tools.base.common.ConsolePrintTable;
+import com.simonAlexs.tools.base.baseStruct.ConsolePrintCellConfig;
 import org.springframework.util.StopWatch;
 
 import java.text.NumberFormat;

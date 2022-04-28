@@ -1,9 +1,9 @@
-package simonAlexs.tools.test;
+package com.simonAlexs.tools.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import simonAlexs.tools.algorithm.TreeUtil;
+import com.simonAlexs.tools.algorithm.TreeUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;

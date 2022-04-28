@@ -1,4 +1,4 @@
-package simonAlexs.tools.baseStruct;
+package com.simonAlexs.tools.base.baseStruct;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

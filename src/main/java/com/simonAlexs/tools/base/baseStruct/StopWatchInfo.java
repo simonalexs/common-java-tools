@@ -1,4 +1,4 @@
-package simonAlexs.tools.baseStruct;
+package com.simonAlexs.tools.base.baseStruct;
 
 import lombok.Data;
 import org.springframework.util.StopWatch;

@@ -1,7 +1,7 @@
-package simonAlexs.tools.common;
+package com.simonAlexs.tools.base.common;
 
 import lombok.Data;
-import simonAlexs.tools.baseStruct.ConsolePrintCellConfig;
+import com.simonAlexs.tools.base.baseStruct.ConsolePrintCellConfig;
 
 import java.util.*;
 
