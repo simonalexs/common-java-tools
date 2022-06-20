@@ -18,11 +18,11 @@ public class TreeUtilTest {
 
     public static void main(String[] args) throws Exception {
         log.info("******************************");
-        int firstLength = 11,
-                secondLength = 11,
-                thirdLength = 100,
+        int firstLength = 10,
+                secondLength = 10,
+                thirdLength = 1000,
                 runTimes = 10,
-                arrayNums = 1000;
+                arrayNums = 100000;
         Map<Integer, JSONObject> map = new HashMap<>();
         log.info("原始长度：" + arrayNums);
         log.info("统计次数：" + runTimes);
@@ -33,8 +33,6 @@ public class TreeUtilTest {
                 commonUseTimes = 0;
         for (int i = 0; i < runTimes; i++) {
             filterSubNode(i, map, arrayNums, firstLength, secondLength, thirdLength);
-            mySortTimes += map.get(i).getLongValue("mySortTime");
-            myFilterTimes += map.get(i).getLongValue("myFilterTime");
             myAllTimes += map.get(i).getLongValue("myAllTime");
             commonUseTimes += map.get(i).getLongValue("commonUseTime");
         }
@@ -77,11 +75,11 @@ public class TreeUtilTest {
         // 原始方案
         List<String> resultListCommon = Collections.synchronizedList(new ArrayList<>());
         long commonStartTime = System.nanoTime();
-        selectedQueryStructListCommon.parallelStream().forEach(t -> {
+        /*selectedQueryStructListCommon.parallelStream().forEach(t -> {
             if (selectedQueryStructListCommon.parallelStream().noneMatch(s -> s.startsWith(t + SEP_STR))) {
                 resultListCommon.add(t);
             }
-        });
+        });*/
         long commonUseTime = (System.nanoTime() - commonStartTime) / 1000 / 1000; // ms
 
 
@@ -98,25 +96,25 @@ public class TreeUtilTest {
         jsonObject.put("filteredLengthCommon", resultListCommon.size());
         map.put(runTimes, jsonObject);
 
-        writeToFile("******************************\n遍历结束 " + Calendar.getInstance().getTime().toLocaleString() + "\n" + "原始列表: ",
-                Arrays.asList(selectedQueryStructList));
+        /*writeToFile("******************************\n遍历结束 " + Calendar.getInstance().getTime().toLocaleString() + "\n" + "原始列表: ",
+                Arrays.asList(selectedQueryStructList));*/
 
         log.info(JSON.toJSONString(map.get(runTimes)));
-        writeStringToFile(JSON.toJSONString(map.get(runTimes)));
+//        writeStringToFile(JSON.toJSONString(map.get(runTimes)));
 
         if (resultListMine.size() < resultListCommon.size()) {
             resultListCommon.removeAll(resultListMine);
             log.info("common比mine多的结果集：" + resultListCommon.size());
-            writeToFile("common比mine多的结果集：" + resultListCommon.size(), resultListCommon);
+//            writeToFile("common比mine多的结果集：" + resultListCommon.size(), resultListCommon);
         } else if (resultListMine.size() > resultListCommon.size()) {
             resultListMine.removeAll(resultListCommon);
             log.info("mine比common多的结果集：" + resultListMine.size());
-            writeToFile("mine比common多的结果集：" + resultListMine.size(), resultListMine);
+//            writeToFile("mine比common多的结果集：" + resultListMine.size(), resultListMine);
         } else {
             log.info("结果集一致" + resultListMine.size());
-            writeStringToFile("结果集一致" + resultListMine.size() + "\n");
+//            writeStringToFile("结果集一致" + resultListMine.size() + "\n");
         }
-        writeStringToFile("******************************\n运行结束 \n\n");
+//        writeStringToFile("******************************\n运行结束 \n\n");
         System.out.println(((System.nanoTime() - startTimeAll) / 1000 / 1000));
     }
 
