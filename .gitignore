@@ -28,6 +28,7 @@ src/hs_err_pid*
 
 # IDEA
 src/.idea
+.idea
 *.iml
 *.ipr
 *.iws
