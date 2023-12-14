@@ -1,44 +1,38 @@
-# Created by .ignore support plugin (hsz.mobi)
-### Java template
-# Compiled class file
-*.class
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
 
-# Log file
-*.log
-
-*.lst
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-src/.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-src/hs_err_pid*
-
-# IDEA
-src/.idea
-.idea
+### IntelliJ IDEA ###
+.idea/
+*.iws
 *.iml
 *.ipr
-*.iws
-src/*/target
-src/*/*/target
-log/*
-doc/vuepress/node_modules/*
-doc/vuepress/docs/.vuepress/*
-doc/system/docs/.vuepress/dist/**/*
-/src/*
-/doc/*
-*.gz
-node_modules/*
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### 自定义忽略的文件 ###
+/docs/temp_files_*/
