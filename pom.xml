@@ -4,25 +4,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.simonAlexs.tools</groupId>
+    <groupId>com.simonalexs.tools</groupId>
     <artifactId>simon-alexs-tools</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 
 
     <!--
     其他项目引用时，可采用此方式引用，或者install到本地再引用
     <dependency>
-        <groupId>com.simonAlexs.tools</groupId>
+        <groupId>com.simonalexs.tools</groupId>
         <artifactId>simon-alexs-tools</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.2</version>
         <scope>system</scope>
         <systemPath>${project.basedir}/lib/simon-alexs-tools-1.0.0-SNAPSHOT.jar</systemPath>
     </dependency>
     -->
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -93,7 +93,6 @@
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
-                    <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

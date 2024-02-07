@@ -2,8 +2,11 @@ package com.simonAlexs.tools.base.common;
 
 import lombok.Data;
 import com.simonAlexs.tools.base.baseStruct.ConsolePrintCellConfig;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+
+import static org.apache.commons.lang3.StringUtils.repeat;
 
 /**
  * @ClassName: ConsolePrintTable
@@ -48,19 +51,20 @@ public class ConsolePrintTable {
         });
 
         StringBuilder result = new StringBuilder("");
-        String tableSeparatorStr = tableSeparator.repeat(rowLength);
+        String tableSeparatorStr = repeat(tableSeparator, rowLength);
         result.append(tableSeparatorStr);
         result.append("\n");
         // 添加标题
-        String tableTitleStr = tableSeparator.repeat(rowLength / 3) + tableTitle + tableSeparator.repeat(rowLength - rowLength / 3 - tableTitle.length());
+        String tableTitleStr =
+                repeat(tableSeparator, rowLength / 3) + tableTitle + repeat(tableSeparator, rowLength - rowLength / 3 - tableTitle.length());
         result.append(tableTitleStr);
         result.append("\n");
 
         result.append(titleResult);
         result.append("\n");
-        result.append(titleSeparator.repeat(rowLength));
+        result.append(repeat(titleSeparator, rowLength));
         result.append("\n");
-        String rowSeparatorStr = rowSeparator.repeat(rowLength);
+        String rowSeparatorStr = repeat(rowSeparator, rowLength);
         for (int i = 0, len = datas.size(); i < len; i++) {
             for (Map.Entry<String, ConsolePrintCellConfig> entry : titleConfigs.entrySet()) {
                 Object dataValue = datas.get(i).get(entry.getKey());
