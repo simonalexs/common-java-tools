@@ -1,8 +1,5 @@
 package com.simonAlexs.tools.base.baseStruct;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.function.Function;
 
@@ -13,9 +10,21 @@ import java.util.function.Function;
  * @Date: 2022/4/18 14:24
  * @Version: 1.0
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class ConsolePrintCellConfig {
     private Function<Object, String> formatter = obj -> String.format("%9s", obj.toString());
+
+    public ConsolePrintCellConfig(Function<Object, String> formatter) {
+        this.formatter = formatter;
+    }
+
+    public ConsolePrintCellConfig() {
+    }
+
+    public Function<Object, String> getFormatter() {
+        return formatter;
+    }
+
+    public void setFormatter(Function<Object, String> formatter) {
+        this.formatter = formatter;
+    }
 }

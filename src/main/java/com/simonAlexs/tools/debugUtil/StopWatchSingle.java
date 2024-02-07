@@ -41,11 +41,11 @@ public class StopWatchSingle {
         String shortSummary = "StopWatch '" + singleStopWatch.getId() + "': running time [ " + String.format("%9s", totalTimeMillis) + "ms / " + String.format("%9.3f", totalTimeSeconds) + "s ]";
 
         ConsolePrintTable.Builder builder = ConsolePrintTable.getInstance().getBuilder();
-        builder.addTitle("ns", new ConsolePrintCellConfig(t -> String.format("%18s", t)));
-        builder.addTitle("ms", new ConsolePrintCellConfig(t -> String.format("%12s", t)));
-        builder.addTitle("s", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
-        builder.addTitle("%", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
         builder.addTitle("Task name", new ConsolePrintCellConfig(t -> String.format("%30s", t)));
+        builder.addTitle("s", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
+        builder.addTitle("ms", new ConsolePrintCellConfig(t -> String.format("%12s", t)));
+        builder.addTitle("ns", new ConsolePrintCellConfig(t -> String.format("%18s", t)));
+        builder.addTitle("%", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
         builder.addTitle("Task begin code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
         builder.addTitle("Task end code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
 
@@ -56,11 +56,11 @@ public class StopWatchSingle {
         for (int i = 0; i < singleStopWatch.getTaskInfo().length; i++) {
             StopWatch.TaskInfo task = singleStopWatch.getTaskInfo()[i];
             ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = builder.getRowDataBuilder();
-            rowDataBuilder.addData("ns", task.getTimeNanos());
-            rowDataBuilder.addData("ms", task.getTimeMillis());
-            rowDataBuilder.addData("s", ddf2.format(task.getTimeSeconds()));
-            rowDataBuilder.addData("%", ddf1.format((double) task.getTimeNanos() / totalTimeNanos * 100));
             rowDataBuilder.addData("Task name", task.getTaskName());
+            rowDataBuilder.addData("s", ddf2.format(task.getTimeSeconds()));
+            rowDataBuilder.addData("ms", task.getTimeMillis());
+            rowDataBuilder.addData("ns", task.getTimeNanos());
+            rowDataBuilder.addData("%", ddf1.format((double) task.getTimeNanos() / totalTimeNanos * 100));
             rowDataBuilder.addData("Task begin code", startLineInfos.get(i));
             rowDataBuilder.addData("Task end code", endLineInfos.get(i));
             builder.addRowData(rowDataBuilder.build());

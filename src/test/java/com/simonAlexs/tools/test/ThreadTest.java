@@ -1,10 +1,11 @@
 package com.simonAlexs.tools.test;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.simonAlexs.tools.other.PrintUtil.println;
 
 /**
  * @ClassName: ThreadTest
@@ -13,7 +14,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Date: 2022/6/24 10:39
  * @Version: 1.0
  */
-@Slf4j
 public class ThreadTest {
     static AtomicInteger threadCount = new AtomicInteger(0);
 
@@ -38,9 +38,9 @@ public class ThreadTest {
                     }
                     threadCount.getAndDecrement();
                 });
-                log.info("添加" + StringUtils.leftPad(String.valueOf(i), 5, "0") + "到线程池");
+                println("添加" + StringUtils.leftPad(String.valueOf(i), 5, "0") + "到线程池");
                 threadPool.execute(thread);
-                log.info("添加" + StringUtils.leftPad(String.valueOf(i), 5, "0") + "结束");
+                println("添加" + StringUtils.leftPad(String.valueOf(i), 5, "0") + "结束");
 
                 try {
                     Thread.sleep(1000);

@@ -1,24 +1,12 @@
 package com.simonAlexs.tools.test.algorithm;
 
-import ch.qos.logback.classic.Logger;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.simonAlexs.tools.algorithm.LeetCodeQuestions;
-import com.simonAlexs.tools.debugUtil.StopWatchSingle;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.StopWatch;
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Random;
 
 /**
  * @ClassName: OtherAlgorithm
@@ -27,7 +15,6 @@ import java.util.stream.Collectors;
  * @Date: 2022/6/20 09:48
  * @Version: 1.0
  */
-@Slf4j
 public class LeetCodeQuestionsTest {
     public static Thread thread;
     public static void main(String[] args) throws InterruptedException, NoSuchFieldException, IllegalAccessException {

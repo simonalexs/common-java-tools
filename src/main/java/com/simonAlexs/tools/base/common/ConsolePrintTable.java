@@ -1,8 +1,6 @@
 package com.simonAlexs.tools.base.common;
 
-import lombok.Data;
 import com.simonAlexs.tools.base.baseStruct.ConsolePrintCellConfig;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -15,7 +13,6 @@ import static org.apache.commons.lang3.StringUtils.repeat;
  * @Date: 2022/4/18 11:42
  * @Version: 1.0
  */
-@Data
 public class ConsolePrintTable {
     private String tableSeparator = "~";
     private String titleSeparator = "=";
@@ -82,8 +79,8 @@ public class ConsolePrintTable {
         return result.toString();
     }
 
-    public class Builder {
-        private ConsolePrintTable consolePrintTable;
+    public static class Builder {
+        private final ConsolePrintTable consolePrintTable;
 
         public Builder(ConsolePrintTable consolePrintTable){
             this.consolePrintTable = consolePrintTable;
@@ -131,5 +128,69 @@ public class ConsolePrintTable {
                 return rowData;
             }
         }
+    }
+
+    public String getTableSeparator() {
+        return tableSeparator;
+    }
+
+    public void setTableSeparator(String tableSeparator) {
+        this.tableSeparator = tableSeparator;
+    }
+
+    public String getTitleSeparator() {
+        return titleSeparator;
+    }
+
+    public void setTitleSeparator(String titleSeparator) {
+        this.titleSeparator = titleSeparator;
+    }
+
+    public String getRowSeparator() {
+        return rowSeparator;
+    }
+
+    public void setRowSeparator(String rowSeparator) {
+        this.rowSeparator = rowSeparator;
+    }
+
+    public String getColSeparator() {
+        return colSeparator;
+    }
+
+    public void setColSeparator(String colSeparator) {
+        this.colSeparator = colSeparator;
+    }
+
+    public int getRowLength() {
+        return rowLength;
+    }
+
+    public void setRowLength(int rowLength) {
+        this.rowLength = rowLength;
+    }
+
+    public String getTableTitle() {
+        return tableTitle;
+    }
+
+    public void setTableTitle(String tableTitle) {
+        this.tableTitle = tableTitle;
+    }
+
+    public Map<String, ConsolePrintCellConfig> getTitleConfigs() {
+        return titleConfigs;
+    }
+
+    public void setTitleConfigs(Map<String, ConsolePrintCellConfig> titleConfigs) {
+        this.titleConfigs = titleConfigs;
+    }
+
+    public List<Map<String, Object>> getDatas() {
+        return datas;
+    }
+
+    public void setDatas(List<Map<String, Object>> datas) {
+        this.datas = datas;
     }
 }

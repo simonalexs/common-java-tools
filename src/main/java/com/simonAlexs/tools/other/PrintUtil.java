@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * 带有 时间、线程 代码位置 信息的print工具类
+ */
 public class PrintUtil {
     public static void println(ResultSet resultSet) {
         JDBCUtil.printResultSet(resultSet);
@@ -77,6 +80,9 @@ public class PrintUtil {
         return value == null ? "null" : value.toString();
     }
 
+    /**
+     * // TODO-high：要改成不引用JDBC，通用打印ResultSet。2024/02/07 11:08:04
+     */
     private static class JDBCUtil {
         /**
          * 打印 ResultSet

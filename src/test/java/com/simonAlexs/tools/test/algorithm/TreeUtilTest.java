@@ -2,30 +2,30 @@ package com.simonAlexs.tools.test.algorithm;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 import com.simonAlexs.tools.algorithm.TreeUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.*;
 
+import static com.simonAlexs.tools.other.PrintUtil.println;
+
 /**
  * @author admin
  */
-@Slf4j
 public class TreeUtilTest {
     static String SEP_STR = "@";
 
     public static void main(String[] args) throws Exception {
-        log.info("******************************");
+        println("******************************");
         int firstLength = 1,
                 secondLength = 2,
                 thirdLength = 110,
                 runTimes = 10,
                 arrayNums = 100;
         Map<Integer, JSONObject> map = new HashMap<>();
-        log.info("原始长度：" + arrayNums);
-        log.info("统计次数：" + runTimes);
+        println("原始长度：" + arrayNums);
+        println("统计次数：" + runTimes);
 
         long mySortTimes = 0,
                 myFilterTimes = 0,
@@ -36,9 +36,9 @@ public class TreeUtilTest {
             myAllTimes += map.get(i).getLongValue("myAllTime");
             commonUseTimes += map.get(i).getLongValue("commonUseTime");
         }
-        log.info("myAllTimes平均耗时：" + (myAllTimes / runTimes));
-        log.info("commonUseTimes平均耗时：" + (commonUseTimes / runTimes));
-        log.info("******************************");
+        println("myAllTimes平均耗时：" + (myAllTimes / runTimes));
+        println("commonUseTimes平均耗时：" + (commonUseTimes / runTimes));
+        println("******************************");
 //        StopWatchMulti.print();
 //        StopWatchMulti.print();
     }
@@ -99,19 +99,19 @@ public class TreeUtilTest {
 //        writeToFile("******************************\n遍历结束 " + Calendar.getInstance().getTime().toLocaleString() + "\n" + "原始列表: ",
 //                Arrays.asList(selectedQueryStructList));
 
-        log.info(JSON.toJSONString(map.get(runTimes)));
+        println(JSON.toJSONString(map.get(runTimes)));
 //        writeStringToFile(JSON.toJSONString(map.get(runTimes)));
 
         /*if (resultListMine.size() < resultListCommon.size()) {
             resultListCommon.removeAll(resultListMine);
-            log.info("common比mine多的结果集：" + resultListCommon.size());
+            println("common比mine多的结果集：" + resultListCommon.size());
             writeToFile("common比mine多的结果集：" + resultListCommon.size(), resultListCommon);
         } else if (resultListMine.size() > resultListCommon.size()) {
             resultListMine.removeAll(resultListCommon);
-            log.info("mine比common多的结果集：" + resultListMine.size());
+            println("mine比common多的结果集：" + resultListMine.size());
             writeToFile("mine比common多的结果集：" + resultListMine.size(), resultListMine);
         } else {
-            log.info("结果集一致" + resultListMine.size());
+            println("结果集一致" + resultListMine.size());
             writeStringToFile("结果集一致" + resultListMine.size() + "\n");
         }
         writeStringToFile("******************************\n运行结束 \n\n");
