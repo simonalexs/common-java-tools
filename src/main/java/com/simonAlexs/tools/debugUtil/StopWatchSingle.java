@@ -27,6 +27,10 @@ public class StopWatchSingle {
         return "[任务：" + taskName + "]监测运行时间开始......";
     }
 
+    public static String start(){
+        return start("");
+    }
+
     public static void stop(){
         singleStopWatch.stop();
         endLineInfos.add(getCurrentCodeLineInfo());

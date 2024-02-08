@@ -53,12 +53,12 @@ public class StopWatchMulti {
     }
 
     public static void print() {
-        String str = generateResultStr(false);
+        String str = generateResultStr(0);
         System.out.println(str);
     }
 
-    public static void print(boolean avgSkipFirst) {
-        String str = generateResultStr(avgSkipFirst);
+    public static void printAvgSkip(int avgSkipNum) {
+        String str = generateResultStr(avgSkipNum);
         System.out.println(str);
     }
 
@@ -84,7 +84,7 @@ public class StopWatchMulti {
         System.out.println(commonConsumingStr);
     }
 
-    private static String generateResultStr(boolean avgSkipFirst) {
+    private static String generateResultStr(int avgSkipNum) {
         for (StopWatchInfo stopWatchInfo : stopWatchList) {
             if (stopWatchInfo.getStopWatch().isRunning()) {
                 throw new RuntimeException("task name 【" + stopWatchInfo.getTaskName() + "】 is still running, please " +
@@ -93,7 +93,7 @@ public class StopWatchMulti {
         }
 
         String commonConsumingStr = getCommonConsumingStr(null);
-        String averageConsumingStr = getAverageConsumingStr(avgSkipFirst);
+        String averageConsumingStr = getAverageConsumingStr(avgSkipNum);
         return commonConsumingStr + "\n" + averageConsumingStr;
     }
 
@@ -138,7 +138,7 @@ public class StopWatchMulti {
         return rowDataBuilder;
     }
 
-    private static String getAverageConsumingStr(boolean avgSkipFirst) {
+    private static String getAverageConsumingStr(int avgSkipNum) {
         ConsolePrintTable.Builder builder = ConsolePrintTable.getInstance("Average time-consuming list").getBuilder();
         builder.addTitle("Task order", new ConsolePrintCellConfig(t -> String.format("%14s", t)));
         builder.addTitle("Task name", new ConsolePrintCellConfig(t -> String.format("%30s", t)));
@@ -161,14 +161,9 @@ public class StopWatchMulti {
 
         for (int i = 0; i < taskNameList.size(); i++) {
             String taskName = taskNameList.get(i);
-            List<StopWatchInfo> stopWatchInfoList = collect.get(taskName);
-            if (avgSkipFirst) {
-                if (stopWatchInfoList.size() > 1) {
-                    stopWatchInfoList = stopWatchInfoList.subList(1, stopWatchInfoList.size());
-                } else {
-                    stopWatchInfoList = new ArrayList<>();
-                }
-            }
+            List<StopWatchInfo> oriStopWatchInfoList = collect.get(taskName);
+            List<StopWatchInfo> stopWatchInfoList = oriStopWatchInfoList.stream()
+                            .skip(avgSkipNum).collect(Collectors.toList());
             Double nanoAverage = stopWatchInfoList.stream().collect(Collectors.averagingLong(t -> t.getStopWatch().getTaskInfo()[0].getTimeNanos()));
             Double millisAverage = stopWatchInfoList.stream().collect(Collectors.averagingLong(t -> t.getStopWatch().getTaskInfo()[0].getTimeMillis()));
             Double secondAverage = stopWatchInfoList.stream().collect(Collectors.averagingDouble(t -> t.getStopWatch().getTaskInfo()[0].getTimeSeconds()));
