@@ -49,8 +49,8 @@ public class ConsolePrintTable {
 
         StringBuilder result = new StringBuilder("");
         String tableSeparatorStr = repeat(tableSeparator, rowLength);
-        result.append(tableSeparatorStr);
-        result.append("\n");
+//        result.append(tableSeparatorStr);
+//        result.append("\n");
         // 添加标题
         String tableTitleStr =
                 repeat(tableSeparator, rowLength / 3) + tableTitle + repeat(tableSeparator, rowLength - rowLength / 3 - tableTitle.length());
@@ -68,14 +68,14 @@ public class ConsolePrintTable {
                 result.append(entry.getValue().getFormatter().apply(dataValue));
                 result.append(colSeparator);
             }
-            if (i != len - 1) {
-                result.append("\n");
-                result.append(rowSeparatorStr);
-            }
+//            if (i != len - 1) {
+//                result.append("\n");
+//                result.append(rowSeparatorStr);
+//            }
             result.append("\n");
         }
-        result.append(tableSeparatorStr);
-        result.append("\n");
+//        result.append(tableSeparatorStr);
+//        result.append("\n");
         return result.toString();
     }
 

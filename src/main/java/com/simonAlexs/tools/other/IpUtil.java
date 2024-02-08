@@ -15,13 +15,9 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.Query;
  
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
- 
+
 public class IpUtil {
  
-	private static Logger LOG = LoggerFactory.getLogger(IpUtil.class);
-	
 	/**
 	 * 获取本机IP地址
 	 * @return
@@ -37,7 +33,6 @@ public class IpUtil {
 	    		}*/
 				ipString = inet4Address.getHostAddress();
 			}
-	    LOG.info("本机IP地址={}" , ipString);
 	    return ipString;
 	  }
 	
@@ -76,7 +71,6 @@ public class IpUtil {
     			
     		}
 		}
-		LOG.info("本机网络前缀长度networkPrefixLength={}" , networkPrefixLength);
 		return networkPrefixLength;
 	}
 	

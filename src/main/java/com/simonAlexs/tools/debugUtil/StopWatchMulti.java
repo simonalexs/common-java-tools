@@ -3,7 +3,6 @@ package com.simonAlexs.tools.debugUtil;
 import com.simonAlexs.tools.base.baseStruct.ConsolePrintCellConfig;
 import com.simonAlexs.tools.base.baseStruct.StopWatchInfo;
 import com.simonAlexs.tools.base.common.ConsolePrintTable;
-import org.springframework.util.StopWatch;
 
 import java.text.NumberFormat;
 import java.util.*;
@@ -17,6 +16,8 @@ import java.util.stream.Collectors;
  * @Version: 1.0
  */
 public class StopWatchMulti {
+    public static boolean ENABLE_PRINT_CODE_LINE = false;
+
     private static List<StopWatchInfo> stopWatchList = new ArrayList<>();
     private static List<String> taskNameList = new ArrayList<>();
 
@@ -57,9 +58,12 @@ public class StopWatchMulti {
         System.out.println(str);
     }
 
-    public static void printAvgSkip(int avgSkipNum) {
+    public static void print(int avgSkipNum) {
         String str = generateResultStr(avgSkipNum);
         System.out.println(str);
+        if (avgSkipNum > 0) {
+            System.out.println("每个任务统计平均耗时的时候，均已忽略前【" + avgSkipNum + "】条耗时信息");
+        }
     }
 
     public static void clear() {
@@ -104,8 +108,10 @@ public class StopWatchMulti {
         builder.addTitle("s", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
         builder.addTitle("ms", new ConsolePrintCellConfig(t -> String.format("%12s", t)));
         builder.addTitle("ns", new ConsolePrintCellConfig(t -> String.format("%18s", t)));
-        builder.addTitle("Task begin code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
-        builder.addTitle("Task end code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+        if (ENABLE_PRINT_CODE_LINE) {
+            builder.addTitle("Task begin code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+            builder.addTitle("Task end code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+        }
 
         NumberFormat ddf2 = NumberFormat.getNumberInstance() ;
         ddf2.setMaximumFractionDigits(4);
@@ -113,28 +119,33 @@ public class StopWatchMulti {
         if (order == null) {
             for (int i = 0; i < stopWatchList.size(); i++) {
                 StopWatchInfo stopWatchInfo = stopWatchList.get(i);
-                ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = getRowDataBuilder(stopWatchInfo, builder, i, ddf2);
+                ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = getRowDataBuilder(stopWatchInfo, builder,
+                        i + 1, ddf2);
                 builder.addRowData(rowDataBuilder.build());
             }
         } else {
-            StopWatchInfo stopWatchInfo = stopWatchList.get(order);
+            StopWatchInfo stopWatchInfo = stopWatchList.get(order - 1);
             ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = getRowDataBuilder(stopWatchInfo, builder, order, ddf2);
             builder.addRowData(rowDataBuilder.build());
         }
         return builder.build().prettyPrint();
     }
 
-    private static ConsolePrintTable.Builder.RowDataBuilder getRowDataBuilder(StopWatchInfo stopWatchInfo, ConsolePrintTable.Builder builder, int i, NumberFormat ddf2) {
+    private static ConsolePrintTable.Builder.RowDataBuilder getRowDataBuilder(StopWatchInfo stopWatchInfo,
+                                                                              ConsolePrintTable.Builder builder,
+                                                                              int order, NumberFormat ddf2) {
         StopWatch.TaskInfo task = stopWatchInfo.getStopWatch().getTaskInfo()[0];
 
         ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = builder.getRowDataBuilder();
-        rowDataBuilder.addData("Task order", i + 1);
+        rowDataBuilder.addData("Task order", order);
         rowDataBuilder.addData("Task name", task.getTaskName());
         rowDataBuilder.addData("s", ddf2.format(task.getTimeSeconds()));
         rowDataBuilder.addData("ms", task.getTimeMillis());
         rowDataBuilder.addData("ns", task.getTimeNanos());
-        rowDataBuilder.addData("Task begin code", stopWatchInfo.getStartLineInfo());
-        rowDataBuilder.addData("Task end code", stopWatchInfo.getEndLineInfo());
+        if (ENABLE_PRINT_CODE_LINE) {
+            rowDataBuilder.addData("Task begin code", stopWatchInfo.getStartLineInfo());
+            rowDataBuilder.addData("Task end code", stopWatchInfo.getEndLineInfo());
+        }
         return rowDataBuilder;
     }
 
@@ -146,8 +157,10 @@ public class StopWatchMulti {
         builder.addTitle("s", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
         builder.addTitle("ms", new ConsolePrintCellConfig(t -> String.format("%12s", t)));
         builder.addTitle("ns", new ConsolePrintCellConfig(t -> String.format("%18s", t)));
-        builder.addTitle("Task begin code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
-        builder.addTitle("Task end code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+        if (ENABLE_PRINT_CODE_LINE) {
+            builder.addTitle("Task begin code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+            builder.addTitle("Task end code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+        }
 
         NumberFormat ddf0 = NumberFormat.getNumberInstance() ;
         ddf0.setMaximumFractionDigits(0);
@@ -164,6 +177,9 @@ public class StopWatchMulti {
             List<StopWatchInfo> oriStopWatchInfoList = collect.get(taskName);
             List<StopWatchInfo> stopWatchInfoList = oriStopWatchInfoList.stream()
                             .skip(avgSkipNum).collect(Collectors.toList());
+            if (stopWatchInfoList.isEmpty()) {
+                continue;
+            }
             Double nanoAverage = stopWatchInfoList.stream().collect(Collectors.averagingLong(t -> t.getStopWatch().getTaskInfo()[0].getTimeNanos()));
             Double millisAverage = stopWatchInfoList.stream().collect(Collectors.averagingLong(t -> t.getStopWatch().getTaskInfo()[0].getTimeMillis()));
             Double secondAverage = stopWatchInfoList.stream().collect(Collectors.averagingDouble(t -> t.getStopWatch().getTaskInfo()[0].getTimeSeconds()));
@@ -175,8 +191,10 @@ public class StopWatchMulti {
             rowDataBuilder.addData("s", ddf2.format(secondAverage));
             rowDataBuilder.addData("ms", ddf1.format(millisAverage));
             rowDataBuilder.addData("ns", ddf0.format(nanoAverage));
-            rowDataBuilder.addData("Task begin code", stopWatchInfoList.get(0).getStartLineInfo());
-            rowDataBuilder.addData("Task end code", stopWatchInfoList.get(0).getEndLineInfo());
+            if (ENABLE_PRINT_CODE_LINE) {
+                rowDataBuilder.addData("Task begin code", stopWatchInfoList.get(0).getStartLineInfo());
+                rowDataBuilder.addData("Task end code", stopWatchInfoList.get(0).getEndLineInfo());
+            }
             builder.addRowData(rowDataBuilder.build());
         }
 

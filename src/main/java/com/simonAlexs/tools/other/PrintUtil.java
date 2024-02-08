@@ -1,31 +1,26 @@
 package com.simonAlexs.tools.other;
 
-import com.sunwayland.pspace.jdbc.PSpaceResultSet;
-import com.sunwayland.pspace.jdbc.PSpaceResultSetMetaData;
-import com.sunwayland.pspace.jdbc.entity.PsColumnMetaData;
-import org.apache.calcite.sql.type.SqlTypeName;
 
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.function.Function;
 
 /**
  * 带有 时间、线程 代码位置 信息的print工具类
  */
 public class PrintUtil {
-    public static void println(ResultSet resultSet) {
-        JDBCUtil.printResultSet(resultSet);
+    public static <T extends ResultSet> void println(T resultSet,
+                                                    Function<T, List<String>> colTypeNameFunc,
+                                                    Function<T, List<String>> colNameFunc,
+                                                    Function<T, List<List<Object>>> dataFunc) {
+        JDBCUtil.printResultSet(resultSet, colTypeNameFunc, colNameFunc, dataFunc);
     }
 
     public static void println(String msg) {
@@ -80,21 +75,20 @@ public class PrintUtil {
         return value == null ? "null" : value.toString();
     }
 
-    /**
-     * // TODO-high：要改成不引用JDBC，通用打印ResultSet。2024/02/07 11:08:04
-     */
     private static class JDBCUtil {
         /**
          * 打印 ResultSet
          */
-        public static void printResultSet(ResultSet resultSet) {
-            List<PsColumnMetaData> metaData = getMetaData(resultSet);
-            List<SqlTypeName> actualMetadataList = metaData.stream().map(PsColumnMetaData::getSqlTypeName).collect(Collectors.toList());
-            List<String> actualColNameList = metaData.stream().map(PsColumnMetaData::getLabel).collect(Collectors.toList());
-            println(actualMetadataList, getRows(resultSet), actualColNameList);
+        public static <T extends ResultSet> void printResultSet(T resultSet,
+                                          Function<T, List<String>> colTypeNameFunc,
+                                          Function<T, List<String>> colNameFunc,
+                                          Function<T, List<List<Object>>> dataFunc) {
+            println(colTypeNameFunc.apply(resultSet),
+                    dataFunc.apply(resultSet),
+                    colNameFunc.apply(resultSet));
         }
 
-        private static void println(List<SqlTypeName> matadataList, List<List<Object>> rows, List<String> colNameList) {
+        private static void println(List<String> matadataList, List<List<Object>> rows, List<String> colNameList) {
             final PrintStream printStream = System.out;
             int columnCount = matadataList.size();
             ArrayList<Integer> columnWidthConfig = getColumnWidthConfig(matadataList, rows, colNameList, columnCount);
@@ -167,15 +161,15 @@ public class PrintUtil {
         private static final String columnIntervalStr = repeat(" ", columnIntervalWidth);
         private static final String WHITE_STR = " ";
 
-        private static ArrayList<Integer> getColumnWidthConfig(List<SqlTypeName> matadataList, List<List<Object>> rows, List<String> colNameList, int columnCount) {
+        private static ArrayList<Integer> getColumnWidthConfig(List<String> matadataList, List<List<Object>> rows, List<String> colNameList, int columnCount) {
             ArrayList<Integer> columnWidthConfig = new ArrayList<>(columnCount);
             for (int i = 0; i < columnCount; i++) {
                 if (colNameList == null) {
-                    int widthTypeName = getWidth(matadataList.get(i).name());
+                    int widthTypeName = getWidth(matadataList.get(i));
                     columnWidthConfig.add(i, widthTypeName);
                 } else {
                     int widthName = getWidth(colNameList.get(i));
-                    int widthTypeName = getWidth(matadataList.get(i).name());
+                    int widthTypeName = getWidth(matadataList.get(i));
                     columnWidthConfig.add(i, Math.max(widthName, widthTypeName));
                 }
             }
@@ -210,8 +204,7 @@ public class PrintUtil {
             String str = value == null ? "null" : value.toString();
             return str + repeat(" ", 4);
         }
-        private static int getWordCount(String s)
-        {
+        private static int getWordCount(String s) {
             int length = 0;
             for(int i = 0; i < s.length(); i++) {
                 int ascii = Character.codePointAt(s, i);
@@ -222,31 +215,6 @@ public class PrintUtil {
                 }
             }
             return length;
-        }
-
-        private static List<PsColumnMetaData> getMetaData(ResultSet resultSet) {
-            try {
-                Field field = PSpaceResultSetMetaData.class.getDeclaredField("columnIndex2ColumnMap");
-                if (!field.isAccessible()) {
-                    field.setAccessible(true);
-                }
-                Map<Integer, PsColumnMetaData> metaDataMap = (Map<Integer, PsColumnMetaData>) field.get(resultSet.getMetaData());
-                return IntStream.range(1, metaDataMap.size() + 1).boxed().map(metaDataMap::get).collect(Collectors.toList());
-            } catch (NoSuchFieldException | IllegalAccessException | SQLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        private static List<List<Object>> getRows(ResultSet resultSet) {
-            try {
-                Field field = PSpaceResultSet.class.getDeclaredField("rows");
-                if (!field.isAccessible()) {
-                    field.setAccessible(true);
-                }
-                List<ArrayList<Object>> rows = (List<ArrayList<Object>>) field.get(resultSet);
-                return rows.stream().map(ArrayList::new).collect(Collectors.toList());
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }

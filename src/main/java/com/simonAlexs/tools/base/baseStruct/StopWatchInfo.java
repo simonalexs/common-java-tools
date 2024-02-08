@@ -1,6 +1,7 @@
 package com.simonAlexs.tools.base.baseStruct;
 
-import org.springframework.util.StopWatch;
+
+import com.simonAlexs.tools.debugUtil.StopWatch;
 
 /**
  * @ClassName: StopWatchInfo
