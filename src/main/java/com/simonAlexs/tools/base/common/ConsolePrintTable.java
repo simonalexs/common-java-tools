@@ -1,6 +1,8 @@
 package com.simonAlexs.tools.base.common;
 
 import com.simonAlexs.tools.base.baseStruct.ConsolePrintCellConfig;
+import com.simonAlexs.tools.other.PrintUtil;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
@@ -20,8 +22,8 @@ public class ConsolePrintTable {
     private String colSeparator = "    ";
     private int rowLength = 0;
     private String tableTitle = "";
-    private Map<String, ConsolePrintCellConfig> titleConfigs = new LinkedHashMap<>();
-    private List<Map<String, Object>> datas = new LinkedList<>();
+    private List<String> colTitles = new ArrayList<>();
+    private List<List<?>> datas = new ArrayList<>();
 
     public static ConsolePrintTable getInstance(){
         return new ConsolePrintTable("");
@@ -39,43 +41,26 @@ public class ConsolePrintTable {
     }
 
     public String prettyPrint() {
-        StringBuilder titleResult = new StringBuilder("");
-        titleConfigs.forEach((title, config) -> {
-            String formattedTitle = config.getFormatter().apply(title);
-            titleResult.append(formattedTitle);
-            titleResult.append(colSeparator);
-            rowLength += formattedTitle.length() + colSeparator.length();
-        });
+        Pair<List<Integer>, String> columnWidthConfigPair = PrintUtil.getColumnWidthConfig(colTitles, datas);
+        int rowMaxWidth = columnWidthConfigPair.getRight().length();
 
-        StringBuilder result = new StringBuilder("");
-        String tableSeparatorStr = repeat(tableSeparator, rowLength);
-//        result.append(tableSeparatorStr);
-//        result.append("\n");
+        StringBuilder result = new StringBuilder();
         // 添加标题
-        String tableTitleStr =
-                repeat(tableSeparator, rowLength / 3) + tableTitle + repeat(tableSeparator, rowLength - rowLength / 3 - tableTitle.length());
-        result.append(tableTitleStr);
+        String tableTitleRowStr =
+                repeat(tableSeparator, rowMaxWidth / 3) + tableTitle + repeat(tableSeparator, rowMaxWidth - rowMaxWidth / 3 - tableTitle.length());
+        result.append(tableTitleRowStr);
         result.append("\n");
 
-        result.append(titleResult);
+        String colTitleStr = PrintUtil.generateRowStr(colTitles, columnWidthConfigPair.getLeft());
+        result.append(colTitleStr);
         result.append("\n");
-        result.append(repeat(titleSeparator, rowLength));
+        result.append(repeat(titleSeparator, rowMaxWidth));
         result.append("\n");
-        String rowSeparatorStr = repeat(rowSeparator, rowLength);
-        for (int i = 0, len = datas.size(); i < len; i++) {
-            for (Map.Entry<String, ConsolePrintCellConfig> entry : titleConfigs.entrySet()) {
-                Object dataValue = datas.get(i).get(entry.getKey());
-                result.append(entry.getValue().getFormatter().apply(dataValue));
-                result.append(colSeparator);
-            }
-//            if (i != len - 1) {
-//                result.append("\n");
-//                result.append(rowSeparatorStr);
-//            }
+        for (List<?> data : datas) {
+            String rowStr = PrintUtil.generateRowStr(data, columnWidthConfigPair.getLeft());
+            result.append(rowStr);
             result.append("\n");
         }
-//        result.append(tableSeparatorStr);
-//        result.append("\n");
         return result.toString();
     }
 
@@ -86,23 +71,17 @@ public class ConsolePrintTable {
             this.consolePrintTable = consolePrintTable;
         }
 
-        public Builder addTitlesByDefaultConfig(String... titles){
-            for (String title : titles) {
-                consolePrintTable.getTitleConfigs().put(title, new ConsolePrintCellConfig());
-            }
+        public Builder addTitle(String title){
+            consolePrintTable.colTitles.add(title);
             return this;
         }
 
-        public Builder addTitle(String title, ConsolePrintCellConfig consolePrintCellConfig){
-            consolePrintTable.getTitleConfigs().put(title, consolePrintCellConfig);
+        public Builder addTitle(List<String> title){
+            consolePrintTable.colTitles.addAll(title);
             return this;
         }
 
-        public RowDataBuilder getRowDataBuilder(){
-            return new RowDataBuilder(this);
-        }
-
-        public Builder addRowData(Map<String, Object> rowData){
+        public Builder addRowData(List<Object> rowData){
             consolePrintTable.datas.add(rowData);
             return this;
         }
@@ -110,87 +89,5 @@ public class ConsolePrintTable {
         public ConsolePrintTable build(){
             return consolePrintTable;
         }
-
-        public class RowDataBuilder {
-            Builder builder;
-            public Map<String, Object> rowData = new HashMap<>();
-
-            public RowDataBuilder(Builder builder) {
-                this.builder = builder;
-            }
-
-            public RowDataBuilder addData(String title, Object data){
-                rowData.put(title, data);
-                return this;
-            }
-
-            public Map<String, Object> build(){
-                return rowData;
-            }
-        }
-    }
-
-    public String getTableSeparator() {
-        return tableSeparator;
-    }
-
-    public void setTableSeparator(String tableSeparator) {
-        this.tableSeparator = tableSeparator;
-    }
-
-    public String getTitleSeparator() {
-        return titleSeparator;
-    }
-
-    public void setTitleSeparator(String titleSeparator) {
-        this.titleSeparator = titleSeparator;
-    }
-
-    public String getRowSeparator() {
-        return rowSeparator;
-    }
-
-    public void setRowSeparator(String rowSeparator) {
-        this.rowSeparator = rowSeparator;
-    }
-
-    public String getColSeparator() {
-        return colSeparator;
-    }
-
-    public void setColSeparator(String colSeparator) {
-        this.colSeparator = colSeparator;
-    }
-
-    public int getRowLength() {
-        return rowLength;
-    }
-
-    public void setRowLength(int rowLength) {
-        this.rowLength = rowLength;
-    }
-
-    public String getTableTitle() {
-        return tableTitle;
-    }
-
-    public void setTableTitle(String tableTitle) {
-        this.tableTitle = tableTitle;
-    }
-
-    public Map<String, ConsolePrintCellConfig> getTitleConfigs() {
-        return titleConfigs;
-    }
-
-    public void setTitleConfigs(Map<String, ConsolePrintCellConfig> titleConfigs) {
-        this.titleConfigs = titleConfigs;
-    }
-
-    public List<Map<String, Object>> getDatas() {
-        return datas;
-    }
-
-    public void setDatas(List<Map<String, Object>> datas) {
-        this.datas = datas;
     }
 }

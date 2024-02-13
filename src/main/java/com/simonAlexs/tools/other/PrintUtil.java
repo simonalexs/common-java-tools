@@ -1,16 +1,20 @@
 package com.simonAlexs.tools.other;
 
 
-import java.io.PrintStream;
+import org.apache.commons.lang3.tuple.Pair;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static com.simonAlexs.tools.other.PrintUtil.JDBCUtil.*;
 
 /**
  * 带有 时间、线程 代码位置 信息的print工具类
@@ -20,7 +24,46 @@ public class PrintUtil {
                                                     Function<T, List<String>> colTypeNameFunc,
                                                     Function<T, List<String>> colNameFunc,
                                                     Function<T, List<List<Object>>> dataFunc) {
-        JDBCUtil.printResultSet(resultSet, colTypeNameFunc, colNameFunc, dataFunc);
+
+        String resultSetStr = generateResultSetStr(colTypeNameFunc.apply(resultSet),
+                dataFunc.apply(resultSet),
+                colNameFunc.apply(resultSet));
+        System.out.println(resultSetStr);
+        System.out.println();
+    }
+
+    public static Pair<List<Integer>, String> getColumnWidthConfig(List<?>... objList) {
+        int realColumnCount = getRealColumnCount(objList);
+        List<Integer> columnWidthConfig = IntStream.range(0, realColumnCount).boxed().map(t -> 0).collect(Collectors.toList());
+        for (List<?> list : objList) {
+            if (List.class.isAssignableFrom(list.get(0).getClass())) {
+                // 参数中的元素为list
+                for (Object rowObj : list) {
+                    scanRowColumnWidth((List<?>) rowObj, columnWidthConfig);
+                }
+            } else {
+                // 参数中的元素为obj
+                scanRowColumnWidth(list, columnWidthConfig);
+            }
+        }
+        int wholeWidth = 0;
+        for (Integer width : columnWidthConfig) {
+            wholeWidth += width + columnIntervalWidth;
+        }
+        wholeWidth -= columnIntervalWidth;
+        String seperatorStr = repeat("-", wholeWidth);
+        return Pair.of(columnWidthConfig, seperatorStr);
+    }
+
+    public static String generateRowStr(List<?> row, List<Integer> columnWidthConfig) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < row.size(); i++) {
+            stringBuilder.append(JDBCUtil.format(columnWidthConfig.get(i), row.get(i)));
+            if (i != row.size() - 1) {
+                stringBuilder.append(JDBCUtil.columnIntervalStr);
+            }
+        }
+        return stringBuilder.toString();
     }
 
     public static void println(String msg) {
@@ -75,62 +118,26 @@ public class PrintUtil {
         return value == null ? "null" : value.toString();
     }
 
-    private static class JDBCUtil {
-        /**
-         * 打印 ResultSet
-         */
-        public static <T extends ResultSet> void printResultSet(T resultSet,
-                                          Function<T, List<String>> colTypeNameFunc,
-                                          Function<T, List<String>> colNameFunc,
-                                          Function<T, List<List<Object>>> dataFunc) {
-            println(colTypeNameFunc.apply(resultSet),
-                    dataFunc.apply(resultSet),
-                    colNameFunc.apply(resultSet));
-        }
+    protected static class JDBCUtil {
 
-        private static void println(List<String> matadataList, List<List<Object>> rows, List<String> colNameList) {
-            final PrintStream printStream = System.out;
-            int columnCount = matadataList.size();
-            ArrayList<Integer> columnWidthConfig = getColumnWidthConfig(matadataList, rows, colNameList, columnCount);
+        static String generateResultSetStr(List<String> matadataList, List<List<Object>> rows, List<String> colNameList) {
+            StringBuilder stringBuilder = new StringBuilder();
 
-            int wholeWidth = 0;
-            for (Integer width : columnWidthConfig) {
-                wholeWidth += width + columnIntervalWidth;
-            }
-            wholeWidth -= columnIntervalWidth;
-            String seperatorStr = repeat("-", wholeWidth);
-
-            printStream.println(seperatorStr);
+            Pair<List<Integer>, String> columnWidthPair = getColumnWidthConfig(matadataList, rows, colNameList);
+            stringBuilder.append(columnWidthPair.getRight()).append("\n");
+            List<Integer> columnWidthConfig = columnWidthPair.getLeft();
             if (colNameList != null) {
                 // 列名
-                for (int i = 0; i < columnCount; i++) {
-                    printStream.print(format(columnWidthConfig.get(i), colNameList.get(i)));
-                    if (i != columnCount - 1) {
-                        printStream.print(columnIntervalStr);
-                    }
-                }
-                printStream.println();
+                stringBuilder.append(generateRowStr(colNameList, columnWidthConfig)).append("\n");
             }
             // 列类型
-            for (int i = 0; i < columnCount; i++) {
-                printStream.print(format(columnWidthConfig.get(i), matadataList.get(i)));
-                if (i != columnCount - 1) {
-                    printStream.print(columnIntervalStr);
-                }
-            }
-            printStream.println();
+            stringBuilder.append(generateRowStr(matadataList, columnWidthConfig)).append("\n");
 
             for (List<Object> row : rows) {
-                for (int i = 0; i < columnCount; i++) {
-                    printStream.print(format(columnWidthConfig.get(i), row.get(i)));
-                    if (i != columnCount - 1) {
-                        printStream.print(columnIntervalStr);
-                    }
-                }
-                printStream.println();
+                stringBuilder.append(generateRowStr(row, columnWidthConfig)).append("\n");
             }
-            printStream.println(seperatorStr);
-            printStream.println();
+            stringBuilder.append(columnWidthPair.getRight());
+            return stringBuilder.toString();
         }
 
         public static String formatRowData(List<?> rowData) {
@@ -151,60 +158,69 @@ public class PrintUtil {
             return builder.toString();
         }
 
-        public static String formatObj(Object value, int widthConfig) {
+        protected static String formatObj(Object value, int widthConfig) {
             int width = getWidth(value);
             return repeat(WHITE_STR, widthConfig - width) + toStr(value);
         }
 
 
-        private static final int columnIntervalWidth = 4;
-        private static final String columnIntervalStr = repeat(" ", columnIntervalWidth);
-        private static final String WHITE_STR = " ";
+        protected static final int columnIntervalWidth = 4;
+        protected static final String columnIntervalStr = repeat(" ", columnIntervalWidth);
+        protected static final String WHITE_STR = " ";
 
-        private static ArrayList<Integer> getColumnWidthConfig(List<String> matadataList, List<List<Object>> rows, List<String> colNameList, int columnCount) {
-            ArrayList<Integer> columnWidthConfig = new ArrayList<>(columnCount);
-            for (int i = 0; i < columnCount; i++) {
-                if (colNameList == null) {
-                    int widthTypeName = getWidth(matadataList.get(i));
-                    columnWidthConfig.add(i, widthTypeName);
-                } else {
-                    int widthName = getWidth(colNameList.get(i));
-                    int widthTypeName = getWidth(matadataList.get(i));
-                    columnWidthConfig.add(i, Math.max(widthName, widthTypeName));
-                }
+        protected static void scanRowColumnWidth(List<?> row, List<Integer> columnWidthConfig) {
+            for (int i = 0; i < row.size(); i++) {
+                Object value = row.get(i);
+                int thisWidth = getWidth(value);
+                Integer preWidth = columnWidthConfig.get(i);
+                int max = Math.max(thisWidth, preWidth);
+                columnWidthConfig.set(i, max);
             }
-            for (List<?> row : rows) {
-                for (int j = 0; j < row.size(); j++) {
-                    int width = getWidth(row.get(j));
-                    if (columnWidthConfig.get(j) < width) {
-                        columnWidthConfig.set(j, width);
+        }
+
+        protected static int getRealColumnCount(List<?>[] objList) {
+            int realColumnCount = 0;
+            for (List<?> list : objList) {
+                if (List.class.isAssignableFrom(list.get(0).getClass())) {
+                    // 参数中的元素为list
+                    int columnCount = ((List<?>) list.get(0)).size();
+                    if (realColumnCount != 0 && realColumnCount != columnCount) {
+                        throw new RuntimeException("参数中列数不一致，请检查各参数（单list与嵌套list）的列数是否一致");
                     }
+                    realColumnCount = columnCount;
+                } else {
+                    // 参数中的元素为obj
+                    int columnCount = list.size();
+                    if (realColumnCount != 0 && realColumnCount != columnCount) {
+                        throw new RuntimeException("参数中列数不一致，请检查各参数（单list与嵌套list）的列数是否一致");
+                    }
+                    realColumnCount = columnCount;
                 }
             }
-            return columnWidthConfig;
+            return realColumnCount;
         }
 
 
-        private static int getWidth(Object value) {
+        protected static int getWidth(Object value) {
             if (value == null) {
                 return 4;
             }
             return getWordCount(value.toString());
         }
-        private static String format(int widthConfig, Object value) {
+        protected static String format(int widthConfig, Object value) {
             int width = getWidth(value);
             return repeat(WHITE_STR, widthConfig - width) + toStr(value);
         }
 
-        private static String repeat(String str, int times) {
+        protected static String repeat(String str, int times) {
             return String.join("", Collections.nCopies(times, str));
         }
 
-        private static String toStr(Object value) {
+        protected static String toStr(Object value) {
             String str = value == null ? "null" : value.toString();
             return str + repeat(" ", 4);
         }
-        private static int getWordCount(String s) {
+        protected static int getWordCount(String s) {
             int length = 0;
             for(int i = 0; i < s.length(); i++) {
                 int ascii = Character.codePointAt(s, i);

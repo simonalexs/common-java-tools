@@ -103,14 +103,16 @@ public class StopWatchMulti {
 
     private static String getCommonConsumingStr(Integer order) {
         ConsolePrintTable.Builder builder = ConsolePrintTable.getInstance("Time-consuming list").getBuilder();
-        builder.addTitle("Task order", new ConsolePrintCellConfig(t -> String.format("%14s", t)));
-        builder.addTitle("Task name", new ConsolePrintCellConfig(t -> String.format("%30s", t)));
-        builder.addTitle("s", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
-        builder.addTitle("ms", new ConsolePrintCellConfig(t -> String.format("%12s", t)));
-        builder.addTitle("ns", new ConsolePrintCellConfig(t -> String.format("%18s", t)));
+        builder.addTitle(Arrays.asList(
+                "Task order",
+                "Task name",
+                "s",
+                "ms",
+                "ns"
+                ));
         if (ENABLE_PRINT_CODE_LINE) {
-            builder.addTitle("Task begin code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
-            builder.addTitle("Task end code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+            builder.addTitle("Task begin code");
+            builder.addTitle("Task end code");
         }
 
         NumberFormat ddf2 = NumberFormat.getNumberInstance() ;
@@ -119,47 +121,47 @@ public class StopWatchMulti {
         if (order == null) {
             for (int i = 0; i < stopWatchList.size(); i++) {
                 StopWatchInfo stopWatchInfo = stopWatchList.get(i);
-                ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = getRowDataBuilder(stopWatchInfo, builder,
-                        i + 1, ddf2);
-                builder.addRowData(rowDataBuilder.build());
+                List<Object> rowData = getRowData(stopWatchInfo, builder, i + 1, ddf2);
+                builder.addRowData(rowData);
             }
         } else {
             StopWatchInfo stopWatchInfo = stopWatchList.get(order - 1);
-            ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = getRowDataBuilder(stopWatchInfo, builder, order, ddf2);
-            builder.addRowData(rowDataBuilder.build());
+            List<Object> rowData = getRowData(stopWatchInfo, builder, order, ddf2);
+            builder.addRowData(rowData);
         }
         return builder.build().prettyPrint();
     }
 
-    private static ConsolePrintTable.Builder.RowDataBuilder getRowDataBuilder(StopWatchInfo stopWatchInfo,
-                                                                              ConsolePrintTable.Builder builder,
-                                                                              int order, NumberFormat ddf2) {
+    private static List<Object> getRowData(StopWatchInfo stopWatchInfo,
+                                           ConsolePrintTable.Builder builder,
+                                           int order, NumberFormat ddf2) {
         StopWatch.TaskInfo task = stopWatchInfo.getStopWatch().getTaskInfo()[0];
-
-        ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = builder.getRowDataBuilder();
-        rowDataBuilder.addData("Task order", order);
-        rowDataBuilder.addData("Task name", task.getTaskName());
-        rowDataBuilder.addData("s", ddf2.format(task.getTimeSeconds()));
-        rowDataBuilder.addData("ms", task.getTimeMillis());
-        rowDataBuilder.addData("ns", task.getTimeNanos());
+        List<Object> rowData = Arrays.asList(
+                order,
+                task.getTaskName(),
+                ddf2.format(task.getTimeSeconds()),
+                task.getTimeMillis(),
+                task.getTimeNanos()
+        );
         if (ENABLE_PRINT_CODE_LINE) {
-            rowDataBuilder.addData("Task begin code", stopWatchInfo.getStartLineInfo());
-            rowDataBuilder.addData("Task end code", stopWatchInfo.getEndLineInfo());
+            rowData.add(stopWatchInfo.getStartLineInfo());
+            rowData.add(stopWatchInfo.getEndLineInfo());
         }
-        return rowDataBuilder;
+        return rowData;
     }
 
     private static String getAverageConsumingStr(int avgSkipNum) {
         ConsolePrintTable.Builder builder = ConsolePrintTable.getInstance("Average time-consuming list").getBuilder();
-        builder.addTitle("Task order", new ConsolePrintCellConfig(t -> String.format("%14s", t)));
-        builder.addTitle("Task name", new ConsolePrintCellConfig(t -> String.format("%30s", t)));
-        builder.addTitle("Task run times", new ConsolePrintCellConfig(t -> String.format("%14s", t)));
-        builder.addTitle("s", new ConsolePrintCellConfig(t -> String.format("%9s", t)));
-        builder.addTitle("ms", new ConsolePrintCellConfig(t -> String.format("%12s", t)));
-        builder.addTitle("ns", new ConsolePrintCellConfig(t -> String.format("%18s", t)));
+        builder.addTitle(Arrays.asList(
+                "Task order",
+                "Task name",
+                "s",
+                "ms",
+                "ns"
+        ));
         if (ENABLE_PRINT_CODE_LINE) {
-            builder.addTitle("Task begin code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
-            builder.addTitle("Task end code", new ConsolePrintCellConfig(t -> String.format("%80s", t)));
+            builder.addTitle("Task begin code");
+            builder.addTitle("Task end code");
         }
 
         NumberFormat ddf0 = NumberFormat.getNumberInstance() ;
@@ -184,20 +186,20 @@ public class StopWatchMulti {
             Double millisAverage = stopWatchInfoList.stream().collect(Collectors.averagingLong(t -> t.getStopWatch().getTaskInfo()[0].getTimeMillis()));
             Double secondAverage = stopWatchInfoList.stream().collect(Collectors.averagingDouble(t -> t.getStopWatch().getTaskInfo()[0].getTimeSeconds()));
 
-            ConsolePrintTable.Builder.RowDataBuilder rowDataBuilder = builder.getRowDataBuilder();
-            rowDataBuilder.addData("Task order", i + 1);
-            rowDataBuilder.addData("Task name", taskName);
-            rowDataBuilder.addData("Task run times", stopWatchInfoList.size());
-            rowDataBuilder.addData("s", ddf2.format(secondAverage));
-            rowDataBuilder.addData("ms", ddf1.format(millisAverage));
-            rowDataBuilder.addData("ns", ddf0.format(nanoAverage));
+            List<Object> rowData = Arrays.asList(
+                    i + 1,
+                    taskName,
+                    stopWatchInfoList.size(),
+                    ddf2.format(secondAverage),
+                    ddf1.format(millisAverage),
+                    ddf0.format(nanoAverage)
+            );
             if (ENABLE_PRINT_CODE_LINE) {
-                rowDataBuilder.addData("Task begin code", stopWatchInfoList.get(0).getStartLineInfo());
-                rowDataBuilder.addData("Task end code", stopWatchInfoList.get(0).getEndLineInfo());
+                rowData.add(stopWatchInfoList.get(0).getStartLineInfo());
+                rowData.add(stopWatchInfoList.get(0).getEndLineInfo());
             }
-            builder.addRowData(rowDataBuilder.build());
+            builder.addRowData(rowData);
         }
-
         return builder.build().prettyPrint();
     }
 
