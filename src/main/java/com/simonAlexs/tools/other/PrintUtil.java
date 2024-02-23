@@ -1,13 +1,17 @@
 package com.simonAlexs.tools.other;
 
 
+import com.simonAlexs.tools.base.StaticVariables;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -20,16 +24,41 @@ import static com.simonAlexs.tools.other.PrintUtil.JDBCUtil.*;
  * 带有 时间、线程 代码位置 信息的print工具类
  */
 public class PrintUtil {
-    public static <T extends ResultSet> void println(T resultSet,
-                                                    Function<T, List<String>> colTypeNameFunc,
-                                                    Function<T, List<String>> colNameFunc,
-                                                    Function<T, List<List<Object>>> dataFunc) {
+    public static <T extends ResultSet> void println(T resultSet) {
+        println(resultSet, Integer.MAX_VALUE);
+    }
+    public static <T extends ResultSet> void println(T resultSet, int printDataNum) {
+        try {
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            List<String> colTypeNameList = new ArrayList<>();
+            for (int i = 1; i <= columnCount; i++) {
+                String typeName = StaticVariables.SQL_TYPES.get(metaData.getColumnType(i));
+                colTypeNameList.add(typeName);
+            }
 
-        String resultSetStr = generateResultSetStr(colTypeNameFunc.apply(resultSet),
-                dataFunc.apply(resultSet),
-                colNameFunc.apply(resultSet));
-        System.out.println(resultSetStr);
-        System.out.println();
+            List<String> colNameList = new ArrayList<>();
+            for (int i = 1; i <= columnCount; i++) {
+                colNameList.add(metaData.getColumnLabel(i));
+            }
+
+            List<List<Object>> dataList = new ArrayList<>();
+            int realPrintDataNum = Math.max(printDataNum, 0);
+            int readiedNums = 0;
+            while (readiedNums < realPrintDataNum && resultSet.next()) {
+                List<Object> row = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    row.add(resultSet.getObject(i));
+                }
+                dataList.add(row);
+                readiedNums++;
+            }
+            String resultSetStr = generateResultSetStr(colTypeNameList, dataList, colNameList);
+            System.out.println(resultSetStr);
+            System.out.println();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Pair<List<Integer>, String> getColumnWidthConfig(List<?>... objList) {
@@ -122,9 +151,10 @@ public class PrintUtil {
 
         static String generateResultSetStr(List<String> matadataList, List<List<Object>> rows, List<String> colNameList) {
             StringBuilder stringBuilder = new StringBuilder();
-
             Pair<List<Integer>, String> columnWidthPair = getColumnWidthConfig(matadataList, rows, colNameList);
-            stringBuilder.append(columnWidthPair.getRight()).append("\n");
+            String lineSeparator = columnWidthPair.getRight() + "\n";
+
+            stringBuilder.append(lineSeparator);
             List<Integer> columnWidthConfig = columnWidthPair.getLeft();
             if (colNameList != null) {
                 // 列名
@@ -132,11 +162,13 @@ public class PrintUtil {
             }
             // 列类型
             stringBuilder.append(generateRowStr(matadataList, columnWidthConfig)).append("\n");
+            stringBuilder.append(lineSeparator);
 
             for (List<Object> row : rows) {
                 stringBuilder.append(generateRowStr(row, columnWidthConfig)).append("\n");
             }
-            stringBuilder.append(columnWidthPair.getRight());
+            stringBuilder.append(lineSeparator);
+
             return stringBuilder.toString();
         }
 
