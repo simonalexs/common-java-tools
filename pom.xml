@@ -45,6 +45,11 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.4.2</version>
                 <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.simonalexs.Starter</mainClass>
+                        </manifest>
+                    </archive>
                     <descriptors>
                         <descriptor>${basedir}\assembly\jar-with-dependencies.xml</descriptor>
                     </descriptors>
