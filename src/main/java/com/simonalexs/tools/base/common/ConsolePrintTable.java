@@ -1,11 +1,12 @@
 package com.simonalexs.tools.base.common;
 
+import com.simonalexs.tools.base.tuple.Pair;
 import com.simonalexs.tools.other.PrintUtil;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 
-import static org.apache.commons.lang3.StringUtils.repeat;
+import static com.simonalexs.tools.StringUtil.repeat;
+
 
 /**
  * @ClassName: ConsolePrintTable

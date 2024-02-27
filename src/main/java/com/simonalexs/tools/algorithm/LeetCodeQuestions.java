@@ -1,7 +1,5 @@
 package com.simonalexs.tools.algorithm;
 
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.JSON;
 
 import java.util.*;
 
@@ -43,7 +41,6 @@ public class LeetCodeQuestions {
             ((ArrayList<Integer>) assignedJobs[index].get("jobs")).add(jobs[i]);
         }
         final Map<String, Object> times = Arrays.stream(assignedJobs).max(Comparator.comparing(map -> Integer.valueOf(map.get("times").toString()))).get();
-        System.out.println(JSON.toJSONString(assignedJobs, SerializerFeature.PrettyFormat));
         return Long.valueOf(times.get("times").toString());
     }
 }

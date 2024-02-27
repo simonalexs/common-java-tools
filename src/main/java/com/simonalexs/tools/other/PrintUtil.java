@@ -2,7 +2,7 @@ package com.simonalexs.tools.other;
 
 
 import com.simonalexs.tools.base.StaticVariables;
-import org.apache.commons.lang3.tuple.Pair;
+import com.simonalexs.tools.base.tuple.Pair;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -26,6 +26,7 @@ public class PrintUtil {
     public static <T extends ResultSet> void println(T resultSet) {
         println(resultSet, Integer.MAX_VALUE);
     }
+
     public static <T extends ResultSet> void println(T resultSet, int printDataNum) {
         try {
             ResultSetMetaData metaData = resultSet.getMetaData();
@@ -60,6 +61,51 @@ public class PrintUtil {
         }
     }
 
+    public static void println(List<?>... objList) {
+        println(null, objList);
+    }
+
+    public static void println(String lineSeparatorBetweenParam, List<?>... objList) {
+        println(null, lineSeparatorBetweenParam, null, objList);
+    }
+
+    public static void println(String header, String lineSeparatorBetweenParam, String footer, List<?>... objList) {
+        Pair<List<Integer>, String> columnWidthConfig = getColumnWidthConfig(objList);
+        List<Integer> widthConfig = columnWidthConfig.getLeft();
+        int wholeWidth = columnWidthConfig.getRight().length();
+
+        StringBuilder builder = new StringBuilder();
+        if (header != null && !header.isEmpty()) {
+            builder.append(repeat(header, wholeWidth))
+                    .append("\n");
+        }
+        for (int i = 0; i < objList.length; i++) {
+            List<?> list = objList[i];
+            if (List.class.isAssignableFrom(list.get(0).getClass())) {
+                // 参数中的元素为list，也就是二维数组
+                for (Object rowObj : list) {
+                    String rowStr = generateRowStr((List<?>) rowObj, widthConfig);
+                    builder.append(rowStr)
+                            .append("\n");
+                }
+            } else {
+                // 参数中的元素为obj，也就是一维数组
+                String rowStr = generateRowStr(list, widthConfig);
+                builder.append(rowStr)
+                        .append("\n");
+            }
+            if (i < objList.length - 1 && lineSeparatorBetweenParam != null && !lineSeparatorBetweenParam.isEmpty()) {
+                builder.append(repeat(lineSeparatorBetweenParam, wholeWidth))
+                        .append("\n");
+            }
+        }
+        if (footer != null && !footer.isEmpty()) {
+            builder.append(repeat(footer, wholeWidth))
+                    .append("\n");
+        }
+        System.out.println(builder);
+    }
+
     public static Pair<List<Integer>, String> getColumnWidthConfig(List<?>... objList) {
         int realColumnCount = getRealColumnCount(objList);
         List<Integer> columnWidthConfig = IntStream.range(0, realColumnCount).boxed().map(t -> 0).collect(Collectors.toList());
@@ -84,9 +130,11 @@ public class PrintUtil {
     }
 
     public static String generateRowStr(List<?> row, List<Integer> columnWidthConfig) {
+        // TODO-high：可以增加参数，控制【行首缩进字符数】。2024/02/27 09:08:35
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < row.size(); i++) {
-            stringBuilder.append(JDBCUtil.format(columnWidthConfig.get(i), row.get(i)));
+            String formatted = formatObj(row.get(i), columnWidthConfig.get(i));
+            stringBuilder.append(formatted);
             if (i != row.size() - 1) {
                 stringBuilder.append(JDBCUtil.columnIntervalStr);
             }
@@ -189,11 +237,11 @@ public class PrintUtil {
             return builder.toString();
         }
 
-        protected static String formatObj(Object value, int widthConfig) {
+        static String formatObj(Object value, int widthConfig) {
             int width = getWidth(value);
+            // TODO-high：可以增加参数，控制【居中，左对齐，右对齐】。2024/02/27 09:08:35
             return repeat(WHITE_STR, widthConfig - width) + toStr(value);
         }
-
 
         protected static final int columnIntervalWidth = 4;
         protected static final String columnIntervalStr = repeat(" ", columnIntervalWidth);
@@ -212,7 +260,7 @@ public class PrintUtil {
         protected static int getRealColumnCount(List<?>[] objList) {
             int realColumnCount = 0;
             for (List<?> list : objList) {
-                if (List.class.isAssignableFrom(list.get(0).getClass())) {
+                if (!list.isEmpty() && List.class.isAssignableFrom(list.get(0).getClass())) {
                     // 参数中的元素为list
                     int columnCount = ((List<?>) list.get(0)).size();
                     if (realColumnCount != 0 && realColumnCount != columnCount) {
@@ -238,19 +286,11 @@ public class PrintUtil {
             }
             return getWordCount(value.toString());
         }
-        protected static String format(int widthConfig, Object value) {
-            int width = getWidth(value);
-            return repeat(WHITE_STR, widthConfig - width) + toStr(value);
-        }
 
         protected static String repeat(String str, int times) {
             return String.join("", Collections.nCopies(times, str));
         }
 
-        protected static String toStr(Object value) {
-            String str = value == null ? "null" : value.toString();
-            return str + repeat(" ", 4);
-        }
         protected static int getWordCount(String s) {
             int length = 0;
             for(int i = 0; i < s.length(); i++) {

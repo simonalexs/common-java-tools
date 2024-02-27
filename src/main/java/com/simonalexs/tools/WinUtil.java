@@ -1,5 +1,7 @@
 package com.simonalexs.tools;
 
+import com.simonalexs.tools.annotation.Func;
+import com.simonalexs.tools.annotation.Param;
 import com.simonalexs.tools.other.PrintUtil;
 
 import java.awt.*;
@@ -22,25 +24,29 @@ public class WinUtil {
         clip.setContents(tText, null);
     }
 
-    public static void autoStartAppCycle(String filePath) throws IOException {
-        autoStartAppCycle(filePath, 2, 3);
+    public static void checkAndAutoStartAppPeriodically(String pathOfApp) throws IOException {
+        checkAndAutoStartAppPeriodically(pathOfApp, 2, 3);
     }
 
-    public static void autoStartAppCycle(String filePath, int waitSecondForStart,
-                                         int checkPeriodSecond) throws IOException {
-        autoStartAppCycle(filePath, waitSecondForStart, checkPeriodSecond, Integer.MAX_VALUE);
+    public static void checkAndAutoStartAppPeriodically(String pathOfApp, int waitingSecondForStart,
+                                                        int checkPeriodSecond) throws IOException {
+        checkAndAutoStartAppPeriodically(pathOfApp, waitingSecondForStart, checkPeriodSecond, Integer.MAX_VALUE);
     }
 
-    public static void autoStartAppCycle(String filePath, int waitSecondForStart,
-                                         int checkPeriodSecond, int runningSeconds) throws IOException {
-        long endTime = System.currentTimeMillis() + runningSeconds * 1000L;
+    @Func
+    public static void checkAndAutoStartAppPeriodically(
+            String pathOfApp,
+            @Param("2") int waitingSecondForStart,
+            @Param("3") int checkPeriodSecond,
+            @Param("2147483647") int wholeRunSecondsOfTool) {
+        long endTime = System.currentTimeMillis() + wholeRunSecondsOfTool * 1000L;
         Runnable runnable = () -> {
             if (System.currentTimeMillis() >= endTime) {
                 throw new RuntimeException("时间到，任务停止");
             }
             try {
-                if (!findProcess(filePath)) {
-                    if (!startApp(filePath, waitSecondForStart)) {
+                if (!findProcess(pathOfApp)) {
+                    if (!startApp(pathOfApp, waitingSecondForStart)) {
                         PrintUtil.println("启动失败");
                     }
                 }
@@ -56,10 +62,10 @@ public class WinUtil {
     /**
      * 传入启动应用路径，运行open命令
      */
-    public static boolean startApp(String filePath, int waitSecondAfterStart) throws Exception {
-        Runtime.getRuntime().exec("cmd /c " + dealPath(filePath));
-        Thread.sleep(waitSecondAfterStart * 1000L);
-        boolean process = findProcess(filePath);
+    public static boolean startApp(String pathOfApp, int waitingSecondForStart) throws Exception {
+        Runtime.getRuntime().exec("cmd /c " + dealPath(pathOfApp));
+        Thread.sleep(waitingSecondForStart * 1000L);
+        boolean process = findProcess(pathOfApp);
         if (process) {
             PrintUtil.println("启动执行完成");
         } else {
@@ -75,13 +81,16 @@ public class WinUtil {
     /**
      * 传入进程名称processName,判断是进程是否存在
      */
-    public static boolean findProcess(String processNameOrPath) throws IOException {
-        File file = new File(processNameOrPath);
+    public static boolean findProcess(String processNameOrPathOfApp) throws IOException {
+        if (processNameOrPathOfApp == null || processNameOrPathOfApp.isEmpty()) {
+            throw new IOException("process name must not be null or empty");
+        }
+        File file = new File(processNameOrPathOfApp);
         String realProcessName;
         if (file.isFile()) {
             realProcessName = file.getName();
         } else {
-            realProcessName = processNameOrPath;
+            realProcessName = processNameOrPathOfApp;
         }
         BufferedReader bufferedReader = null;
         try {

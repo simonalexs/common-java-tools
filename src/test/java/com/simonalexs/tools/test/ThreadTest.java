@@ -1,6 +1,6 @@
 package com.simonalexs.tools.test;
 
-import org.apache.commons.lang3.StringUtils;
+import com.simonalexs.tools.StringUtil;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -38,9 +38,9 @@ public class ThreadTest {
                     }
                     threadCount.getAndDecrement();
                 });
-                println("添加" + StringUtils.leftPad(String.valueOf(i), 5, "0") + "到线程池");
+                println("添加" + StringUtil.leftPad(String.valueOf(i), 5, "0") + "到线程池");
                 threadPool.execute(thread);
-                println("添加" + StringUtils.leftPad(String.valueOf(i), 5, "0") + "结束");
+                println("添加" + StringUtil.leftPad(String.valueOf(i), 5, "0") + "结束");
 
                 try {
                     Thread.sleep(1000);

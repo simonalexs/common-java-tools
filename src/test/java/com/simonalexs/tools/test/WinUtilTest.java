@@ -7,7 +7,7 @@ import java.io.IOException;
 public class WinUtilTest {
     public static void main(String[] args) {
         try {
-            WinUtil.autoStartAppCycle("D:\\Workspace\\SVN\\PSOdbc\\DBServer.64.exe");
+            WinUtil.checkAndAutoStartAppPeriodically("D:\\Workspace\\SVN\\PSOdbc\\DBServer.64.exe");
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

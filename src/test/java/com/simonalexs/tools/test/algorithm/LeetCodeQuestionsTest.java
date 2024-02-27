@@ -53,6 +53,7 @@ public class LeetCodeQuestionsTest {
     }
 
     public static void print(Object o) {
-        System.out.println(JSON.toJSONString(o, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue));
+        System.out.println(o);
+//        System.out.println(JSON.toJSONString(o, SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue));
     }
 }
