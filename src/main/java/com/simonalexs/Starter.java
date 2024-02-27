@@ -1,28 +1,62 @@
 package com.simonalexs;
 
 import com.simonalexs.handler.UtilHandler;
-import com.simonalexs.tools.annotation.Func;
 import com.simonalexs.tools.other.PrintUtil;
 
-import java.io.Serializable;
-import java.sql.ParameterMetaData;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class Starter {
     private static final Page MAIN_PAGE = new MainPage(null);
 
     public static void main(String[] args) {
-        // 1.输出 help 信息
+        if (args.length == 0) {
+            // 交互式运行
+            runByInteraction();
+        } else {
+            // 依据参数运行
+            runByCommand(args);
+        }
+    }
 
-        // 【可提供三种运行模式：
-        //       一种是带命令参数运行特定工具
-        //       一种是交互式运行，逐步选择，运行最后要记得打印出“本次运行的完整参数列表，便于用户复制粘贴”】
-        //       一种是输出本包中所有工具类及其下的工具方法、参数、返回值（能每个方法带有说明信息的话更好），由用户自由选择使用哪一个
-
+    private static void runByInteraction() {
         Page page = MAIN_PAGE;
         while (page != null) {
             page = page.show();
+        }
+    }
+
+    private static void runByCommand(String[] args) {
+        String module = args[0];
+        String funcName = args[1];
+
+        Map<String, List<UtilHandler.FuncInfo>> module2FuncsMap = UtilHandler.getModule2FuncsMap();
+        Optional<String> moduleOptional =
+                module2FuncsMap.keySet().stream().filter(t -> t.equalsIgnoreCase(module)).findFirst();
+        if (!moduleOptional.isPresent()) {
+            System.out.println("[ERROR] module not exists: [" + module + "].Available values: ");
+            System.out.println(String.join(", ", module2FuncsMap.keySet()));
+            return;
+        }
+        List<UtilHandler.FuncInfo> funcInfoList = module2FuncsMap.get(moduleOptional.get());
+        Optional<UtilHandler.FuncInfo> funcInfoOptional = funcInfoList.stream().filter(t -> t.name().equalsIgnoreCase(funcName)).findFirst();
+        if (!funcInfoOptional.isPresent()) {
+            System.out.println("[ERROR] func not exists: [" + funcName + "].Available values: ");
+            System.out.println(funcInfoList.stream().map(UtilHandler.FuncInfo::name).collect(Collectors.joining(", ")));
+            return;
+        }
+        UtilHandler.FuncInfo func = funcInfoOptional.get();
+        int realParamCount = args.length - 2;
+        if (realParamCount != func.params.size()) {
+            System.out.println("[ERROR] func param num error: [" + realParamCount + "].See func info: ");
+            func.show();
+            return;
+        }
+        // 开始执行
+        String errorMsg = func.run();
+        if (!errorMsg.isEmpty()) {
+            System.out.println(errorMsg);
         }
     }
 
@@ -127,81 +161,40 @@ public class Starter {
                 }
                 System.out.println("Please update param value by input order and value if needed. " +
                         "Input '" + runCommand + "' to run:");
-                try {
-                    String inputStr = input.nextLine();
-                    if (inputStr.equalsIgnoreCase(runCommand)) {
-                        // 执行方法
-                        Object[] paramValues = new Object[funcInfo.params.size()];
-                        for (int i = 0; i < funcInfo.params.size(); i++) {
-                            UtilHandler.ParamInfo param = funcInfo.params.get(i);
-                            Object value = param.parser.apply(param.currentValue);
-                            paramValues[i] = value;
-                        }
-                        Object invokedResult = funcInfo.func.invoke(null, paramValues);
-                        System.out.print("running success, ");
-                        Class<?> returnType = funcInfo.func.getReturnType();
-                        if (returnType == Void.class) {
-                            System.out.println("no result.");
-                        } else {
-                            System.out.println("result: ");
-                            System.out.println(invokedResult);
-                        }
-                        return null;
-                    } else {
-                        String[] split = inputStr.split(" ");
-                        if (split.length == 0) {
-                            userTipAfterInput = "find nothing from input";
-                            continue;
-                        }
-                        int paramOrder = Integer.parseInt(split[0]);
-                        // 返回页面
-                        if (pageMap.containsKey(paramOrder)) {
-                            return pageMap.get(paramOrder);
-                        }
-                        if (paramOrder <= 0 || paramOrder >= funcInfo.params.size()) {
-                            userTipAfterInput = "order is wrong";
-                            continue;
-                        }
-                        // 修改参数值
-                        funcInfo.params.get(paramOrder - 1).currentValue = split[1].trim();
+                String inputStr = input.nextLine();
+                if (inputStr.equalsIgnoreCase(runCommand)) {
+                    // 执行方法
+                    String errorMsg = funcInfo.run();
+                    if (!errorMsg.isEmpty()) {
+                        userTipAfterInput = errorMsg;
+                        continue;
                     }
-                } catch (Exception e) {
-                    userTipAfterInput = e.getClass().getName() + ": " + e.getMessage();
+                    return null;
+                } else {
+                    String[] split = inputStr.split(" ");
+                    if (split.length == 0) {
+                        userTipAfterInput = "find nothing from input";
+                        continue;
+                    }
+                    int paramOrder = Integer.parseInt(split[0]);
+                    // 返回页面
+                    if (pageMap.containsKey(paramOrder)) {
+                        return pageMap.get(paramOrder);
+                    }
+                    if (paramOrder <= 0 || paramOrder >= funcInfo.params.size()) {
+                        userTipAfterInput = "order is wrong";
+                        continue;
+                    }
+                    // 修改参数值
+                    funcInfo.params.get(paramOrder - 1).currentValue = split[1].trim();
                 }
             }
         }
 
         @Override
         protected void showPageContent() {
-            System.out.println();
             String pageTips = resetPageMap();
-            System.out.println("func info:");
-            List<List<String>> funcContent = Arrays.asList(
-                    Arrays.asList("    module", funcInfo.module()),
-                    Arrays.asList("    name", funcInfo.name()),
-                    Arrays.asList("    desc", funcInfo.desc)
-            );
-            PrintUtil.println(funcContent);
-
-            System.out.println("param info:");
-            List<String> titles = Arrays.asList(
-                    "order",
-                    "paramName",
-                    "currentValue",
-                    "desc"
-            );
-            List<List<Object>> paramContent = new ArrayList<>();
-            for (int i = 0; i < funcInfo.params.size(); i++) {
-                UtilHandler.ParamInfo paramInfo = funcInfo.params.get(i);
-                List<Object> paramDescription = Arrays.asList(
-                        i + 1,
-                        paramInfo.name,
-                        paramInfo.currentValue,
-                        paramInfo.tip
-                );
-                paramContent.add(paramDescription);
-            }
-            PrintUtil.println("=", "-", "=", titles, paramContent);
+            funcInfo.show();
             System.out.println(pageTips);
         }
     }

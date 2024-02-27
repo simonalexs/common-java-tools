@@ -5,7 +5,9 @@ import com.simonalexs.tools.ClassScannerUtil;
 import com.simonalexs.tools.StringUtil;
 import com.simonalexs.tools.annotation.Func;
 import com.simonalexs.tools.annotation.Param;
+import com.simonalexs.tools.other.PrintUtil;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.math.BigInteger;
@@ -127,6 +129,71 @@ public class UtilHandler {
             String className = func.getDeclaringClass().getSimpleName();
             String classPrefix = className.replaceAll("(?i)util$", "");
             return StringUtil.toLowerCaseFirst(classPrefix);
+        }
+
+        public void show() {
+            System.out.println();
+            System.out.println("func info:");
+            List<List<String>> funcContent = Arrays.asList(
+                    Arrays.asList("    module", this.module()),
+                    Arrays.asList("    name", this.name()),
+                    Arrays.asList("    desc", this.desc)
+            );
+            PrintUtil.println(funcContent);
+
+            System.out.println("param info:");
+            List<String> titles = Arrays.asList(
+                    "order",
+                    "paramName",
+                    "currentValue",
+                    "desc"
+            );
+            List<List<Object>> paramContent = new ArrayList<>();
+            for (int i = 0; i < this.params.size(); i++) {
+                UtilHandler.ParamInfo paramInfo = this.params.get(i);
+                List<Object> paramDescription = Arrays.asList(
+                        i + 1,
+                        paramInfo.name,
+                        paramInfo.currentValue,
+                        paramInfo.tip
+                );
+                paramContent.add(paramDescription);
+            }
+            PrintUtil.println("=", "-", "=", titles, paramContent);
+            printCurrentCommand();
+            System.out.println();
+        }
+
+        private void printCurrentCommand() {
+            StringBuilder command = new StringBuilder();
+            command.append(this.module()).append(" ")
+                    .append(this.name());
+            for (UtilHandler.ParamInfo param : this.params) {
+                command.append(" ").append(param.currentValue);
+            }
+            System.out.println("*************** current command is: " + command + " ******************");
+        }
+
+        public String run() {
+            try {
+                Object[] paramValues = new Object[this.params.size()];
+                for (int i = 0; i < this.params.size(); i++) {
+                    UtilHandler.ParamInfo param = this.params.get(i);
+                    Object value = param.parser.apply(param.currentValue);
+                    paramValues[i] = value;
+                }
+                Object invokedResult = this.func.invoke(null, paramValues);
+                System.out.print("running success, ");
+                Class<?> returnType = this.func.getReturnType();
+                if (returnType == Void.class) {
+                    System.out.println("no result.");
+                } else {
+                    System.out.println("result: " + invokedResult);
+                }
+                return "";
+            } catch (Exception e) {
+                return e.getClass().getName() + ": " + e.getMessage();
+            }
         }
     }
 }

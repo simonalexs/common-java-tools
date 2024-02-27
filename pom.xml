@@ -22,6 +22,8 @@
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <!--   test     -->
         <fastjson.version>2.0.46</fastjson.version>
+        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
     </properties>
 
     <dependencies>
@@ -33,6 +35,41 @@
         </dependency>
     </dependencies>
 
+<!--    <profiles>-->
+<!--        <profile>-->
+<!--            &lt;!&ndash;   https://blog.csdn.net/ech13an/article/details/83870733?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1-83870733-blog-133858422.235^v43^control&spm=1001.2101.3001.4242.2&utm_relevant_index=4         &ndash;&gt;-->
+<!--            <id>release</id>-->
+<!--            <build>-->
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        &lt;!&ndash; 这个是必须要的，我就是因为漏了这个，折腾了好久 &ndash;&gt;-->
+<!--                        <groupId>org.apache.maven.plugins</groupId>-->
+<!--                        <artifactId>maven-gpg-plugin</artifactId>-->
+<!--                        <version>${maven-gpg-plugin.version}</version>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <phase>verify</phase>-->
+<!--                                <goals>-->
+<!--                                    <goal>sign</goal>-->
+<!--                                </goals>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
+<!--            </build>-->
+<!--            &lt;!&ndash; 这个也是必须要的 以下两个<id>代码块中的id要与 setting.xml中的id一致 &ndash;&gt;-->
+<!--            <distributionManagement>-->
+<!--                <snapshotRepository>-->
+<!--                    <id>oss</id>-->
+<!--                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
+<!--                </snapshotRepository>-->
+<!--                <repository>-->
+<!--                    <id>oss</id>-->
+<!--                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
+<!--                </repository>-->
+<!--            </distributionManagement>-->
+<!--        </profile>-->
+<!--    </profiles>-->
 
     <build>
         <plugins>
@@ -87,7 +124,8 @@
                     <dateFormat>yyyy-MM-dd HH-mm-ss</dateFormat>
                     <dateFormatTimeZone>Asia/Shanghai</dateFormatTimeZone>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
                     <excludeProperties>
                         <excludeProperty>git.remote.origin.url</excludeProperty>
                         <excludeProperty>git.*.user.email</excludeProperty>
@@ -109,6 +147,29 @@
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>-->
+<!--                &lt;!&ndash; 这个是必须要的，不然提交到官方仓库的时候会不通过 &ndash;&gt;-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-javadoc-plugin</artifactId>-->
+<!--                <version>${maven-javadoc-plugin.version}</version>-->
+<!--                <configuration>-->
+<!--                    <show>private</show>-->
+<!--                    <nohelp>true</nohelp>-->
+<!--                    <charset>UTF-8</charset>-->
+<!--                    <encoding>UTF-8</encoding>-->
+<!--                    <docencoding>UTF-8</docencoding>-->
+<!--                    &lt;!&ndash; TODO 临时解决不规范的javadoc生成报错,后面要规范化后把这行去掉 &ndash;&gt;-->
+<!--                    <additionalparam>-Xdoclint:none</additionalparam>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>jar</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 </project>
