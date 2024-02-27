@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.simonalexs.tools</groupId>
-    <artifactId>simon-alexs-tools</artifactId>
-    <version>1.0.3</version>
+    <groupId>io.github.simonalexs</groupId>
+    <artifactId>common-java-tools</artifactId>
+    <version>1.0.0</version>
 
     <properties>
         <!--   使用到的依赖（考虑给它们去掉，精简依赖）     -->
@@ -34,13 +34,23 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 <!--    <profiles>-->
 <!--        <profile>-->
-<!--            &lt;!&ndash;   https://blog.csdn.net/ech13an/article/details/83870733?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1-83870733-blog-133858422.235^v43^control&spm=1001.2101.3001.4242.2&utm_relevant_index=4         &ndash;&gt;-->
 <!--            <id>release</id>-->
 <!--            <build>-->
 <!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.sonatype.central</groupId>-->
+<!--                        <artifactId>central-publishing-maven-plugin</artifactId>-->
+<!--                        <version>0.3.0</version>-->
+<!--                        <extensions>true</extensions>-->
+<!--                        <configuration>-->
+<!--                            <publishingServerId>central</publishingServerId>-->
+<!--                            <tokenAuth>true</tokenAuth>-->
+<!--                            <autoPublish>true</autoPublish>-->
+<!--                            <waitUntil>published</waitUntil>-->
+<!--                        </configuration>-->
+<!--                    </plugin>-->
 <!--                    <plugin>-->
 <!--                        &lt;!&ndash; 这个是必须要的，我就是因为漏了这个，折腾了好久 &ndash;&gt;-->
 <!--                        <groupId>org.apache.maven.plugins</groupId>-->
@@ -60,11 +70,11 @@
 <!--            &lt;!&ndash; 这个也是必须要的 以下两个<id>代码块中的id要与 setting.xml中的id一致 &ndash;&gt;-->
 <!--            <distributionManagement>-->
 <!--                <snapshotRepository>-->
-<!--                    <id>oss</id>-->
+<!--                    <id>central</id>-->
 <!--                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
 <!--                </snapshotRepository>-->
 <!--                <repository>-->
-<!--                    <id>oss</id>-->
+<!--                    <id>central</id>-->
 <!--                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
 <!--                </repository>-->
 <!--            </distributionManagement>-->
@@ -89,7 +99,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.simonalexs.Starter</mainClass>
+                            <mainClass>io.github.simonalexs.Starter</mainClass>
                         </manifest>
                     </archive>
                     <descriptors>
