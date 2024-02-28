@@ -1,7 +1,5 @@
 package io.github.simonalexs.tools.test;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import io.github.simonalexs.tools.base.baseStruct.ConsolePrintCellConfig;
 import io.github.simonalexs.tools.other.MdBuilder;
 
@@ -23,7 +21,8 @@ public class MdBuilderTest {
         System.out.println(build);
 
         ConsolePrintCellConfig consolePrintCellConfig = new ConsolePrintCellConfig();
-        String s = JSON.toJSONString(consolePrintCellConfig, SerializerFeature.WriteMapNullValue, SerializerFeature.QuoteFieldNames, SerializerFeature.PrettyFormat);
+//        String s = JSON.toJSONString(consolePrintCellConfig, SerializerFeature.WriteMapNullValue, SerializerFeature.QuoteFieldNames, SerializerFeature.PrettyFormat);
+        String s = "";
 
         MdBuilder contentBuilder2 = MdBuilder.getBuilder();
         contentBuilder.text(s).lineBreak()

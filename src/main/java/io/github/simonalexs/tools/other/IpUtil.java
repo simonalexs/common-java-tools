@@ -20,8 +20,8 @@ public class IpUtil {
  
 	/**
 	 * 获取本机IP地址
-	 * @return
-	 * @throws SocketException
+	 * @return 1
+	 * @throws SocketException 2
 	 */
 	public static String getIpAddress() throws SocketException {
 	        String ipString = null;
@@ -38,8 +38,8 @@ public class IpUtil {
 	
 	/**
 	 * 获取tomcat容器的http端口
-	 * @return
-	 * @throws MalformedObjectNameException 
+	 * @return 1
+	 * @throws MalformedObjectNameException  2
 	 */
 	public static String getTomcatHttpPort() throws MalformedObjectNameException{
 		MBeanServer beanServer = ManagementFactory.getPlatformMBeanServer();
@@ -54,9 +54,9 @@ public class IpUtil {
 	 * 如果长度为8，则表示掩码是255.0.0.0，
 	 * 如果长度为16，则表示掩码是255.255.0.0，
 	 * 如果长度为24，则表示掩码是255.255.255.0，
-	 * @return
-	 * @throws UnknownHostException 
-	 * @throws SocketException 
+	 * @return 1
+	 * @throws UnknownHostException  2
+	 * @throws SocketException 3
 	 */
 	public static int getNetworkPrefixLength() throws UnknownHostException, SocketException{
 		
@@ -76,9 +76,9 @@ public class IpUtil {
 	
 	/**
 	 * 获取网络掩码255.0.0.0，255.0.0.0，255.0.0.0，
-	 * @return
-	 * @throws UnknownHostException 
-	 * @throws SocketException 
+	 * @return 1
+	 * @throws UnknownHostException  2
+	 * @throws SocketException 3
 	 */
 	public static String getSubnet() throws UnknownHostException, SocketException{
 		String subnet = null;
@@ -128,6 +128,4 @@ public class IpUtil {
 	   System.out.println(getNetworkPrefixLength());
 	   System.out.println(getSubnet());
 	}
-	
-	
 }

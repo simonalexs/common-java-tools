@@ -8,17 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @ClassName: StopWatchExpand
- * @Description: 扩展StopWatch，显示ms和s
- * @Author: wcy
- * @Date: 2022/4/18 09:58
- * @Version: 1.0
+ * 扩展StopWatch，显示ms和s
  */
 public class StopWatchSingle {
-    private static StopWatch singleStopWatch = new StopWatch();
-    private static List<String> startLineInfos = new ArrayList<>();
-    private static List<String> endLineInfos = new ArrayList<>();
-
+    private static final StopWatch singleStopWatch = new StopWatch();
+    private static final List<String> startLineInfos = new ArrayList<>();
+    private static final List<String> endLineInfos = new ArrayList<>();
 
     public static String start(String taskName){
         singleStopWatch.start(taskName);

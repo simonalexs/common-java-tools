@@ -6,11 +6,7 @@ import io.github.simonalexs.api.struct.ParamView;
 import java.util.Map;
 
 /**
- * @ClassName: DownloadToolApi
- * @Description:
- * @Author: wcy
- * @Date: 2022/10/20 10:20
- * @Version: 1.0
+ * DownloadToolApi
  */
 public class DownloadToolApi implements ApiInterface {
     public static String downloadBilibiliVideo(ParamView bvid) {

@@ -4,11 +4,7 @@ package io.github.simonalexs.tools.algorithm;
 import java.util.*;
 
 /**
- * @ClassName: OtherAlgorithm
- * @Description: TODO-wcy
- * @Author: wcy
- * @Date: 2022/6/20 09:48
- * @Version: 1.0
+ * LeetCodeQuestions
  */
 public class LeetCodeQuestions {
 

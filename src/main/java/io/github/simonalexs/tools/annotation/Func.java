@@ -16,6 +16,7 @@ import java.lang.annotation.Target;
 public @interface Func {
     /**
      * 描述信息（方法功能描述）
+     * @return 值
      */
     String value() default "";
 }

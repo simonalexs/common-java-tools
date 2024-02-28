@@ -8,11 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * @ClassName: StopWatchExpand
- * @Description: 扩展StopWatch，显示ms和s，并尝试支持多任务同时进行
- * @Author: wcy
- * @Date: 2022/4/18 09:58
- * @Version: 1.0
+ * 扩展StopWatch，显示ms和s，并尝试支持多任务同时进行
  */
 public class StopWatchMulti {
     public static boolean ENABLE_PRINT_CODE_LINE = false;

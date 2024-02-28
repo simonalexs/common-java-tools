@@ -2,18 +2,12 @@ package io.github.simonalexs.tools.base.common;
 
 import io.github.simonalexs.tools.base.tuple.Pair;
 import io.github.simonalexs.tools.other.PrintUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
-import static io.github.simonalexs.tools.StringUtil.repeat;
-
-
 /**
- * @ClassName: ConsolePrintTable
- * @Description: TODO-wcy
- * @Author: wcy
- * @Date: 2022/4/18 11:42
- * @Version: 1.0
+ * ConsolePrintTable
  */
 public class ConsolePrintTable {
     private String tableSeparator = "~";
@@ -47,14 +41,16 @@ public class ConsolePrintTable {
         StringBuilder result = new StringBuilder();
         // 添加标题
         String tableTitleRowStr =
-                repeat(tableSeparator, rowMaxWidth / 3) + tableTitle + repeat(tableSeparator, rowMaxWidth - rowMaxWidth / 3 - tableTitle.length());
+                StringUtils.repeat(tableSeparator, rowMaxWidth / 3)
+                        + tableTitle
+                        + StringUtils.repeat(tableSeparator, rowMaxWidth - rowMaxWidth / 3 - tableTitle.length());
         result.append(tableTitleRowStr);
         result.append("\n");
 
         String colTitleStr = PrintUtil.generateRowStr(colTitles, columnWidthConfigPair.getLeft());
         result.append(colTitleStr);
         result.append("\n");
-        result.append(repeat(titleSeparator, rowMaxWidth));
+        result.append(StringUtils.repeat(titleSeparator, rowMaxWidth));
         result.append("\n");
         for (List<?> data : datas) {
             String rowStr = PrintUtil.generateRowStr(data, columnWidthConfigPair.getLeft());

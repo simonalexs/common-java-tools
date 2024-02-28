@@ -61,6 +61,10 @@ public class WinUtil {
 
     /**
      * 传入启动应用路径，运行open命令
+     * @param pathOfApp 应用路径
+     * @param waitingSecondForStart 等待启动的时间
+     * @return 是否启动成功
+     * @throws Exception 异常
      */
     public static boolean startApp(String pathOfApp, int waitingSecondForStart) throws Exception {
         Runtime.getRuntime().exec("cmd /c " + dealPath(pathOfApp));
@@ -80,6 +84,9 @@ public class WinUtil {
 
     /**
      * 传入进程名称processName,判断是进程是否存在
+     * @param processNameOrPathOfApp 进程路径或名称
+     * @return 是否找到进程
+     * @throws IOException 异常
      */
     public static boolean findProcess(String processNameOrPathOfApp) throws IOException {
         if (processNameOrPathOfApp == null || processNameOrPathOfApp.isEmpty()) {
@@ -119,6 +126,8 @@ public class WinUtil {
 
     /**
      * 传入进程名称，关闭进程
+     * @param filePath 进程路径
+     * @return 是否终止成功
      */
     public static boolean killProcess(String filePath) {
         BufferedReader brStd = null;

@@ -22,6 +22,9 @@ public class FileUtil {
 
     /**
      * 获取Resources目录下的文件内容（无论是本项目内使用，还是本项目打成jar包后在其他项目处调用，都能正确读取到配置文件的内容）
+     * @param path 路径
+     * @return 文件内容
+     * @throws Exception 异常
      */
     public static String getContentInResource(String path) throws Exception {
         InputStream is = FileUtil.class.getResourceAsStream(path);

@@ -8,22 +8,43 @@
     <artifactId>common-java-tools</artifactId>
     <version>1.0.0</version>
 
+    <description>common java tools</description>
+    <url>https://github.com/simonalexs/common-java-tools</url>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>SimonAlexs</name>
+            <email>1350966307@qq.com</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/simonalexs/common-java-tools.git</connection>
+        <developerConnection>scm:git:ssh://github.com/simonalexs/common-java-tools.git</developerConnection>
+        <url>https://github.com/simonalexs/common-java-tools</url>
+    </scm>
     <properties>
-        <!--   使用到的依赖（考虑给它们去掉，精简依赖）     -->
-
         <!--   java     -->
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!--   plugin     -->
         <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
-        <maven-assembly-plugin.version>3.4.2</maven-assembly-plugin.version>
-        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
+        <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
+        <central-publishing-maven-plugin.version>0.3.0</central-publishing-maven-plugin.version>
+        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
+        <git-commit-id-plugin.version>4.9.10</git-commit-id-plugin.version>
         <!--   test     -->
+        <junit.version>5.10.0</junit.version>
+        <!--   使用到的依赖   -->
         <fastjson.version>2.0.46</fastjson.version>
-        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
-        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -31,58 +52,58 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>${fastjson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
-<!--    <profiles>-->
-<!--        <profile>-->
-<!--            <id>release</id>-->
-<!--            <build>-->
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.sonatype.central</groupId>-->
-<!--                        <artifactId>central-publishing-maven-plugin</artifactId>-->
-<!--                        <version>0.3.0</version>-->
-<!--                        <extensions>true</extensions>-->
-<!--                        <configuration>-->
-<!--                            <publishingServerId>central</publishingServerId>-->
-<!--                            <tokenAuth>true</tokenAuth>-->
-<!--                            <autoPublish>true</autoPublish>-->
-<!--                            <waitUntil>published</waitUntil>-->
-<!--                        </configuration>-->
-<!--                    </plugin>-->
-<!--                    <plugin>-->
-<!--                        &lt;!&ndash; 这个是必须要的，我就是因为漏了这个，折腾了好久 &ndash;&gt;-->
-<!--                        <groupId>org.apache.maven.plugins</groupId>-->
-<!--                        <artifactId>maven-gpg-plugin</artifactId>-->
-<!--                        <version>${maven-gpg-plugin.version}</version>-->
-<!--                        <executions>-->
-<!--                            <execution>-->
-<!--                                <phase>verify</phase>-->
-<!--                                <goals>-->
-<!--                                    <goal>sign</goal>-->
-<!--                                </goals>-->
-<!--                            </execution>-->
-<!--                        </executions>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-<!--            </build>-->
-<!--            &lt;!&ndash; 这个也是必须要的 以下两个<id>代码块中的id要与 setting.xml中的id一致 &ndash;&gt;-->
-<!--            <distributionManagement>-->
-<!--                <snapshotRepository>-->
-<!--                    <id>central</id>-->
-<!--                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>-->
-<!--                </snapshotRepository>-->
-<!--                <repository>-->
-<!--                    <id>central</id>-->
-<!--                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>-->
-<!--                </repository>-->
-<!--            </distributionManagement>-->
-<!--        </profile>-->
-<!--    </profiles>-->
+
+    <!-- 这个也是必须要的 以下两个<id>代码块中的id要与 setting.xml中的id一致 -->
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>central-releases</name>
+            <url>https://central.sonatype.com/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
+<!--                <extensions>true</extensions>-->
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
+                    <ignorePublishedComponents>true</ignorePublishedComponents>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -117,34 +138,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <version>${git-commit-id-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>get-the-git-infos</id>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
-                    <dateFormat>yyyy-MM-dd HH-mm-ss</dateFormat>
-                    <dateFormatTimeZone>Asia/Shanghai</dateFormatTimeZone>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
-                    </generateGitPropertiesFilename>
-                    <excludeProperties>
-                        <excludeProperty>git.remote.origin.url</excludeProperty>
-                        <excludeProperty>git.*.user.email</excludeProperty>
-                        <excludeProperty>git.commit.message.*</excludeProperty>
-                    </excludeProperties>
-                    <commitIdGenerationMode>full</commitIdGenerationMode>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <version>${maven-source-plugin.version}</version>
@@ -152,34 +145,24 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
                             <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
-<!--            <plugin>-->
-<!--                &lt;!&ndash; 这个是必须要的，不然提交到官方仓库的时候会不通过 &ndash;&gt;-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-javadoc-plugin</artifactId>-->
-<!--                <version>${maven-javadoc-plugin.version}</version>-->
-<!--                <configuration>-->
-<!--                    <show>private</show>-->
-<!--                    <nohelp>true</nohelp>-->
-<!--                    <charset>UTF-8</charset>-->
-<!--                    <encoding>UTF-8</encoding>-->
-<!--                    <docencoding>UTF-8</docencoding>-->
-<!--                    &lt;!&ndash; TODO 临时解决不规范的javadoc生成报错,后面要规范化后把这行去掉 &ndash;&gt;-->
-<!--                    <additionalparam>-Xdoclint:none</additionalparam>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>jar</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 </project>

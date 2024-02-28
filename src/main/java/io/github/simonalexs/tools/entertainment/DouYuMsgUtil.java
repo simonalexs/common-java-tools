@@ -99,11 +99,11 @@ public class DouYuMsgUtil {
     }
 
     /**
-          * Map转成实体对象
-          * @param map map实体对象包含属性
-          * @param clazz 实体对象类型
-          * @return
-          */
+    * Map转成实体对象
+    * @param map map实体对象包含属性
+    * @param clazz 实体对象类型
+    * @return 实体对象
+    */
     public static Object mapToObject(Map<String, String> map, Class<?> clazz) {
         if (map == null) {
             return null;

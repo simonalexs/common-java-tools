@@ -4,11 +4,7 @@ package io.github.simonalexs.tools.base.baseStruct;
 import io.github.simonalexs.tools.debug.StopWatch;
 
 /**
- * @ClassName: StopWatchInfo
- * @Description: TODO-wcy
- * @Author: wcy
- * @Date: 2022/4/19 08:15
- * @Version: 1.0
+ * StopWatchInfo
  */
 public class StopWatchInfo{
     private StopWatch stopWatch = new StopWatch();

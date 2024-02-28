@@ -16,16 +16,19 @@ import java.lang.annotation.Target;
 public @interface Param {
     /**
      * 用户输入时给用户的提示信息
+     * @return 值
      */
     String tip() default "";
 
     /**
      * 是否必填
+     * @return 值
      */
     boolean require() default false;
 
     /**
      * 默认值
+     * @return 值
      */
     String value() default "";
 }

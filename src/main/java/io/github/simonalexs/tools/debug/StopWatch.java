@@ -89,6 +89,7 @@ public class StopWatch {
 	 * of intervals; otherwise, the {@code TaskInfo} structure will consume
 	 * excessive memory.
 	 * <p>Default is {@code true}.
+	 * @param keepTaskList 是否保存taskList
 	 */
 	public void setKeepTaskList(boolean keepTaskList) {
 		this.keepTaskList = keepTaskList;
@@ -145,26 +146,17 @@ public class StopWatch {
 
 	/**
 	 * Determine whether this {@code StopWatch} is currently running.
+	 * @return 是否正在运行
 	 * @see #currentTaskName()
 	 */
 	public boolean isRunning() {
 		return (this.currentTaskName != null);
 	}
 
-	/**
-	 * Get the name of the currently running task, if any.
-	 * @since 4.2.2
-	 * @see #isRunning()
-	 */
 	public String currentTaskName() {
 		return this.currentTaskName;
 	}
 
-	/**
-	 * Get the time taken by the last task in nanoseconds.
-	 * @since 5.2
-	 * @see #getLastTaskTimeMillis()
-	 */
 	public long getLastTaskTimeNanos() throws IllegalStateException {
 		if (this.lastTaskInfo == null) {
 			throw new IllegalStateException("No tasks run: can't get last task interval");
@@ -172,10 +164,6 @@ public class StopWatch {
 		return this.lastTaskInfo.getTimeNanos();
 	}
 
-	/**
-	 * Get the time taken by the last task in milliseconds.
-	 * @see #getLastTaskTimeNanos()
-	 */
 	public long getLastTaskTimeMillis() throws IllegalStateException {
 		if (this.lastTaskInfo == null) {
 			throw new IllegalStateException("No tasks run: can't get last task interval");
@@ -183,9 +171,6 @@ public class StopWatch {
 		return this.lastTaskInfo.getTimeMillis();
 	}
 
-	/**
-	 * Get the name of the last task.
-	 */
 	public String getLastTaskName() throws IllegalStateException {
 		if (this.lastTaskInfo == null) {
 			throw new IllegalStateException("No tasks run: can't get last task name");
@@ -193,9 +178,6 @@ public class StopWatch {
 		return this.lastTaskInfo.getTaskName();
 	}
 
-	/**
-	 * Get the last task as a {@link TaskInfo} object.
-	 */
 	public TaskInfo getLastTaskInfo() throws IllegalStateException {
 		if (this.lastTaskInfo == null) {
 			throw new IllegalStateException("No tasks run: can't get last task info");
@@ -204,44 +186,22 @@ public class StopWatch {
 	}
 
 
-	/**
-	 * Get the total time in nanoseconds for all tasks.
-	 * @since 5.2
-	 * @see #getTotalTimeMillis()
-	 * @see #getTotalTimeSeconds()
-	 */
 	public long getTotalTimeNanos() {
 		return this.totalTimeNanos;
 	}
 
-	/**
-	 * Get the total time in milliseconds for all tasks.
-	 * @see #getTotalTimeNanos()
-	 * @see #getTotalTimeSeconds()
-	 */
 	public long getTotalTimeMillis() {
 		return nanosToMillis(this.totalTimeNanos);
 	}
 
-	/**
-	 * Get the total time in seconds for all tasks.
-	 * @see #getTotalTimeNanos()
-	 * @see #getTotalTimeMillis()
-	 */
 	public double getTotalTimeSeconds() {
 		return nanosToSeconds(this.totalTimeNanos);
 	}
 
-	/**
-	 * Get the number of tasks timed.
-	 */
 	public int getTaskCount() {
 		return this.taskCount;
 	}
 
-	/**
-	 * Get an array of the data for tasks performed.
-	 */
 	public TaskInfo[] getTaskInfo() {
 		if (!this.keepTaskList) {
 			throw new UnsupportedOperationException("Task info is not being kept!");
@@ -249,19 +209,10 @@ public class StopWatch {
 		return this.taskList.toArray(new TaskInfo[0]);
 	}
 
-
-	/**
-	 * Get a short description of the total running time.
-	 */
 	public String shortSummary() {
 		return "StopWatch '" + getId() + "': running time = " + getTotalTimeNanos() + " ns";
 	}
 
-	/**
-	 * Generate a string with a table describing all tasks performed.
-	 * <p>For custom reporting, call {@link #getTaskInfo()} and use the task info
-	 * directly.
-	 */
 	public String prettyPrint() {
 		StringBuilder sb = new StringBuilder(shortSummary());
 		sb.append('\n');
@@ -287,11 +238,6 @@ public class StopWatch {
 		return sb.toString();
 	}
 
-	/**
-	 * Generate an informative string describing all tasks performed
-	 * <p>For custom reporting, call {@link #getTaskInfo()} and use the task info
-	 * directly.
-	 */
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(shortSummary());
@@ -332,41 +278,20 @@ public class StopWatch {
 			this.timeNanos = timeNanos;
 		}
 
-		/**
-		 * Get the name of this task.
-		 */
 		public String getTaskName() {
 			return this.taskName;
 		}
 
-		/**
-		 * Get the time in nanoseconds this task took.
-		 * @since 5.2
-		 * @see #getTimeMillis()
-		 * @see #getTimeSeconds()
-		 */
 		public long getTimeNanos() {
 			return this.timeNanos;
 		}
 
-		/**
-		 * Get the time in milliseconds this task took.
-		 * @see #getTimeNanos()
-		 * @see #getTimeSeconds()
-		 */
 		public long getTimeMillis() {
 			return nanosToMillis(this.timeNanos);
 		}
 
-		/**
-		 * Get the time in seconds this task took.
-		 * @see #getTimeMillis()
-		 * @see #getTimeNanos()
-		 */
 		public double getTimeSeconds() {
 			return nanosToSeconds(this.timeNanos);
 		}
-
 	}
-
 }

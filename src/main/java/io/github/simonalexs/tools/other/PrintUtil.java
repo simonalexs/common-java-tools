@@ -1,6 +1,7 @@
 package io.github.simonalexs.tools.other;
 
 
+import com.alibaba.fastjson2.JSON;
 import io.github.simonalexs.tools.base.StaticVariables;
 import io.github.simonalexs.tools.base.tuple.Pair;
 
@@ -143,7 +144,15 @@ public class PrintUtil {
     }
 
     public static void println(String msg) {
+        System.out.println("string");
         String info = wrap(toStr(msg));
+        System.out.println(info);
+    }
+
+    public static void println(Object obj) {
+        System.out.println("object");
+        String objStr = JSON.toJSONString(obj);
+        String info = wrap(toStr(objStr));
         System.out.println(info);
     }
 

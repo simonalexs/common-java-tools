@@ -23,8 +23,8 @@ public class MdBuilder {
 
     /**
      * 加粗字体
-     * @param text
-     * @return
+     * @param text 1
+     * @return 2
      */
     public MdBuilder blod(String text) {
         result += "**" + text + "**" + " ";
@@ -33,8 +33,8 @@ public class MdBuilder {
 
     /**
      * 加粗字体
-     * @param text
-     * @return
+     * @param text 1
+     * @return 2
      */
     public MdBuilder text(String text) {
         result += text;
@@ -43,7 +43,8 @@ public class MdBuilder {
 
     /**
      * 链接
-     * @return
+     * @param url 1
+     * @return 1
      */
     public MdBuilder link(String url) {
         result += "[" + url + "]" + "(" + url + ")";
@@ -52,7 +53,9 @@ public class MdBuilder {
 
     /**
      * 链接
-     * @return
+     * @param title 1
+     * @param url 1
+     * @return 2
      */
     public MdBuilder link(String title, String url) {
         result += "[" + title + "]" + "(" + url + ")";
@@ -61,8 +64,8 @@ public class MdBuilder {
 
     /**
      * 多行代码块
-     * @param text
-     * @return
+     * @param text 1
+     * @return 1
      */
     public MdBuilder codeMutilLine(String text) {
         result += "```" + text + "```" + "<br/>";
@@ -71,8 +74,8 @@ public class MdBuilder {
 
     /**
      * 单行代码块
-     * @param text
-     * @return
+     * @param text 1
+     * @return 1
      */
     public MdBuilder codeSingleLine(String text) {
         result += "`" + text + "`";
@@ -81,7 +84,7 @@ public class MdBuilder {
 
     /**
      * 有序列表准备工作
-     * @return
+     * @return 1
      */
     public MdBuilder prepareForListWithOrdered() {
         currentOrder = INITIAL_ORDER;
@@ -90,7 +93,7 @@ public class MdBuilder {
 
     /**
      * 有序列表
-     * @return
+     * @return 1
      */
     public MdBuilder listWithOrdered() {
         return listWithOrdered("");
@@ -98,8 +101,8 @@ public class MdBuilder {
 
     /**
      * 有序列表
-     * @param text
-     * @return
+     * @param text 1
+     * @return 1
      */
     public MdBuilder listWithOrdered(String text) {
         result += currentOrder++ + ". " + text;
@@ -108,7 +111,7 @@ public class MdBuilder {
 
     /**
      * 无序列表准备工作
-     * @return
+     * @return 1
      */
     public MdBuilder prepareForListWithUnordered() {
         result += UNORDERED_LIST_REPAIR_CHAR;
@@ -117,7 +120,7 @@ public class MdBuilder {
 
     /**
      * 无序列表
-     * @return
+     * @return 1
      */
     public MdBuilder listWithUnordered() {
         return listWithUnordered("");
@@ -125,8 +128,8 @@ public class MdBuilder {
 
     /**
      * 无序列表
-     * @param text
-     * @return
+     * @param text 1
+     * @return 1
      */
     public MdBuilder listWithUnordered(String text) {
         result += UNORDERED_LIST_REPAIR_CHAR + "*  " + text;
@@ -135,7 +138,7 @@ public class MdBuilder {
 
     /**
      * 换行
-     * @return
+     * @return 1
      */
     public MdBuilder lineBreak() {
         result += LINE_BREAK;

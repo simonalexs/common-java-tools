@@ -6,11 +6,7 @@ import java.util.Collection;
 import java.util.Comparator;
 
 /**
- * @ClassName: TreeUtil
- * @Description: 树结构相关的工具类
- * @Author: wcy
- * @Date: 2022/4/15 10:11
- * @Version: 1.0
+ * TreeUtil
  */
 public class TreeUtil {
     /**
