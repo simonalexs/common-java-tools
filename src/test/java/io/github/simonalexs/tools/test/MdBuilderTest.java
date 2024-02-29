@@ -1,6 +1,6 @@
 package io.github.simonalexs.tools.test;
 
-import io.github.simonalexs.tools.base.baseStruct.ConsolePrintCellConfig;
+import io.github.simonalexs.base.baseStruct.ConsolePrintCellConfig;
 import io.github.simonalexs.tools.other.MdBuilder;
 
 /**

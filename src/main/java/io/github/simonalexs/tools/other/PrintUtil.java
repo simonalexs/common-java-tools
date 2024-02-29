@@ -2,8 +2,9 @@ package io.github.simonalexs.tools.other;
 
 
 import com.alibaba.fastjson2.JSON;
-import io.github.simonalexs.tools.base.StaticVariables;
-import io.github.simonalexs.tools.base.tuple.Pair;
+import com.alibaba.fastjson2.JSONWriter;
+import io.github.simonalexs.base.StaticVariables;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -62,12 +63,16 @@ public class PrintUtil {
         }
     }
 
+    public static void println(List<?> objList) {
+        println("", "", "", objList);
+    }
+
     public static void println(List<?>... objList) {
-        println(null, objList);
+        println("", objList);
     }
 
     public static void println(String lineSeparatorBetweenParam, List<?>... objList) {
-        println(null, lineSeparatorBetweenParam, null, objList);
+        println("", lineSeparatorBetweenParam, "", objList);
     }
 
     public static void println(String header, String lineSeparatorBetweenParam, String footer, List<?>... objList) {
@@ -151,7 +156,7 @@ public class PrintUtil {
 
     public static void println(Object obj) {
         System.out.println("object");
-        String objStr = JSON.toJSONString(obj);
+        String objStr = JSON.toJSONString(obj, JSONWriter.Feature.PrettyFormat);
         String info = wrap(toStr(objStr));
         System.out.println(info);
     }

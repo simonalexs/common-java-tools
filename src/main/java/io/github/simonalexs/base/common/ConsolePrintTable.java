@@ -1,8 +1,8 @@
-package io.github.simonalexs.tools.base.common;
+package io.github.simonalexs.base.common;
 
-import io.github.simonalexs.tools.base.tuple.Pair;
 import io.github.simonalexs.tools.other.PrintUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 

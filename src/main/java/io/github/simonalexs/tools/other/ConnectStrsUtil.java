@@ -1,7 +1,8 @@
 package io.github.simonalexs.tools.other;
 
 
-import io.github.simonalexs.tools.base.tuple.Pair;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 

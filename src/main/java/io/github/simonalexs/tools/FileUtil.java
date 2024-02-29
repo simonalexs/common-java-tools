@@ -1,5 +1,8 @@
 package io.github.simonalexs.tools;
 
+import io.github.simonalexs.annotation.Func;
+import io.github.simonalexs.annotation.Param;
+
 import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
@@ -7,7 +10,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 public class FileUtil {
-    public static String getContentInResourceOrSamePath(String path) throws Exception {
+    @Func
+    public static String getContentInResourceOrSamePath(@Param(tip = "path of file starting with '/'") String path) throws Exception {
         path = path.replaceAll("\r|\n|\r\n", "");
         try {
             return getContentInResource(path);
@@ -15,7 +19,7 @@ public class FileUtil {
             try {
                 return getContentInSamePath(path);
             } catch (RuntimeException e2) {
-                throw new SQLException("配置文件读取失败：" + e2.getMessage());
+                throw new Exception("配置文件读取失败：" + e2.getMessage());
             }
         }
     }
@@ -72,6 +76,37 @@ public class FileUtil {
             buffer.append(line);
         }
         return buffer.toString();
+    }
+
+    public static void writeContentInSamePath(String path, String content) throws Exception {
+        writeContentInSamePath(path, content, false);
+    }
+
+    public static void writeContentInSamePath(String path, String content, boolean append) throws Exception {
+        path = path.replaceAll("\r|\n|\r\n", "");
+        try {
+            String base = getJarPath();
+            String decodeBase = null;
+            try {
+                decodeBase = URLDecoder.decode(base, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new UnsupportedEncodingException("URL解码失败【" + base + "】：" + e.getMessage());
+            }
+            File file = new File(decodeBase, path);
+            if (!file.exists()) {
+                if (!file.createNewFile()) {
+                    throw new Exception("文件创建失败：" + path);
+                }
+            }
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file, append));
+            if (append) {
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.write(content);
+            bufferedWriter.close();
+        } catch (Exception e2) {
+            throw new Exception("写入文件内容失败：" + e2.getMessage());
+        }
     }
 
     /**

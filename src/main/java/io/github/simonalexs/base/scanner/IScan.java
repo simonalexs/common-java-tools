@@ -1,4 +1,4 @@
-package io.github.simonalexs.tools.base.scanner;
+package io.github.simonalexs.base.scanner;
 
 import java.util.List;
 import java.util.function.Predicate;

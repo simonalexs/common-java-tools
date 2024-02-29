@@ -1,6 +1,6 @@
 package io.github.simonalexs.tools;
 
-import io.github.simonalexs.tools.base.scanner.ScanExecutor;
+import io.github.simonalexs.base.scanner.ScanExecutor;
 
 import java.util.ArrayList;
 import java.util.List;

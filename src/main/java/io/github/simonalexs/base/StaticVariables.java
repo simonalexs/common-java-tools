@@ -1,4 +1,4 @@
-package io.github.simonalexs.tools.base;
+package io.github.simonalexs.base;
 
 import java.lang.reflect.Field;
 import java.sql.Types;

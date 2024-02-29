@@ -1,7 +1,7 @@
 package io.github.simonalexs.tools.debug;
 
-import io.github.simonalexs.tools.base.baseStruct.StopWatchInfo;
-import io.github.simonalexs.tools.base.common.ConsolePrintTable;
+import io.github.simonalexs.base.baseStruct.StopWatchInfo;
+import io.github.simonalexs.base.common.ConsolePrintTable;
 
 import java.text.NumberFormat;
 import java.util.*;

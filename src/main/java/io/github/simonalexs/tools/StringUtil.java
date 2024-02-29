@@ -2,9 +2,10 @@ package io.github.simonalexs.tools;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class StringUtil {
-    public static final String SPACE = " ";
+import java.math.BigInteger;
+import java.util.function.Function;
 
+public class StringUtil {
     public static String toLowerCaseFirst(String str) {
         if (StringUtils.isEmpty(str)) {
             return str;
@@ -72,5 +73,42 @@ public class StringUtil {
      */
     public static boolean isUpperCase(char c) {
         return c >= 'A' && c <= 'Z';
+    }
+
+    public static<T> T parse(String str, Class<T> clazz) {
+        if (str == null || str.isEmpty() && clazz != String.class) {
+            return null;
+        }
+        return clazz.cast(getParser(clazz).apply(str));
+    }
+
+    public static Function<String, Object> getParser(Class<?> targetTypeClass) {
+        if (Boolean.class.equals(targetTypeClass) || boolean.class.equals(targetTypeClass)) {
+            return str -> {
+                if (str.equals("1")) {
+                    return true;
+                }
+                if (str.equals("0")) {
+                    return false;
+                }
+                return Boolean.valueOf(str);
+            };
+        } else if (Integer.class.equals(targetTypeClass) || int.class.equals(targetTypeClass)) {
+            return Integer::valueOf;
+        } else if (Double.class.equals(targetTypeClass) || double.class.equals(targetTypeClass)) {
+            return Double::valueOf;
+        } else if (Float.class.equals(targetTypeClass) || float.class.equals(targetTypeClass)) {
+            return Float::valueOf;
+        } else if (Long.class.equals(targetTypeClass) || long.class.equals(targetTypeClass)) {
+            return Long::valueOf;
+        } else if (Short.class.equals(targetTypeClass) || short.class.equals(targetTypeClass)) {
+            return Short::valueOf;
+        } else if (Byte.class.equals(targetTypeClass) || byte.class.equals(targetTypeClass)) {
+            return Byte::valueOf;
+        } else if (BigInteger.class.equals(targetTypeClass)) {
+            return BigInteger::new;
+        } else {
+            return str -> str;
+        }
     }
 }

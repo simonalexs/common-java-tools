@@ -36,3 +36,4 @@ build/
 
 ### 自定义忽略的文件 ###
 /docs/temp_files_*/
+properties.yml

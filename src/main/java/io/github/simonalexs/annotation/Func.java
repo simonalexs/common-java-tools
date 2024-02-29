@@ -1,4 +1,4 @@
-package io.github.simonalexs.tools.annotation;
+package io.github.simonalexs.annotation;
 
 
 import io.github.simonalexs.Starter;

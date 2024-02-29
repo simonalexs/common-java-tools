@@ -32,6 +32,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <user.config.file>properties.yml</user.config.file>
+        <user.config.template.file>properties-template.yml</user.config.template.file>
         <!--   plugin     -->
         <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.5.0</maven-assembly-plugin.version>
@@ -45,6 +47,8 @@
         <!--   使用到的依赖   -->
         <fastjson.version>2.0.46</fastjson.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
+        <yaml.snakeyaml.version>2.2</yaml.snakeyaml.version>
+        <wxpusher-java-sdk.version>2.1.4</wxpusher-java-sdk.version>
     </properties>
 
     <dependencies>
@@ -58,6 +62,17 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang3.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${yaml.snakeyaml.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zjiecode</groupId>
+            <artifactId>wxpusher-java-sdk</artifactId>
+            <version>${wxpusher-java-sdk.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -76,6 +91,13 @@
     </distributionManagement>
 
     <build>
+        <resources>
+            <resource>
+                <!--  此配置是为了让 properties、yml 文件中能直接引用 pom.xml 中定义的属性  -->
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.sonatype.central</groupId>

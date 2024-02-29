@@ -1,4 +1,4 @@
-package io.github.simonalexs.tools.base.baseStruct;
+package io.github.simonalexs.base.baseStruct;
 
 
 import io.github.simonalexs.tools.debug.StopWatch;

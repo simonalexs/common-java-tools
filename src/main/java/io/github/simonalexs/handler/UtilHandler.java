@@ -3,8 +3,8 @@ package io.github.simonalexs.handler;
 import io.github.simonalexs.Starter;
 import io.github.simonalexs.tools.ClassScannerUtil;
 import io.github.simonalexs.tools.StringUtil;
-import io.github.simonalexs.tools.annotation.Func;
-import io.github.simonalexs.tools.annotation.Param;
+import io.github.simonalexs.annotation.Func;
+import io.github.simonalexs.annotation.Param;
 import io.github.simonalexs.tools.other.PrintUtil;
 
 import java.lang.reflect.Method;
@@ -12,6 +12,7 @@ import java.lang.reflect.Parameter;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class UtilHandler {
     public static final Map<String, List<FuncInfo>> MODULE_2_FUNCS_MAP = new LinkedHashMap<>();
@@ -19,18 +20,28 @@ public class UtilHandler {
     static {
         String basePackageName = Starter.class.getPackage().getName();
         List<Class<?>> classList = ClassScannerUtil.searchClasses(basePackageName);
+        Map<String, List<FuncInfo>> map = new LinkedHashMap<>();
         for (Class<?> aClass : classList) {
             for (Method method : aClass.getDeclaredMethods()) {
                 if (method.getAnnotation(Func.class) != null) {
                     FuncInfo funcInfo = new FuncInfo(method);
                     String module = funcInfo.module();
-                    if (!MODULE_2_FUNCS_MAP.containsKey(module)) {
-                        MODULE_2_FUNCS_MAP.put(module, new ArrayList<>());
+                    if (!map.containsKey(module)) {
+                        map.put(module, new ArrayList<>());
                     }
-                    MODULE_2_FUNCS_MAP.get(module).add(funcInfo);
+                    map.get(module).add(funcInfo);
                 }
             }
         }
+        // 按名称排序
+        map.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(e -> {
+                    List<FuncInfo> sortedFuncInfos = e.getValue().stream()
+                            .sorted(Comparator.comparing(FuncInfo::name))
+                            .collect(Collectors.toList());
+                    MODULE_2_FUNCS_MAP.put(e.getKey(), sortedFuncInfos);
+                });
     }
 
     public static Map<String, List<FuncInfo>> getModule2FuncsMap() {
@@ -81,43 +92,13 @@ public class UtilHandler {
                     paramInfo.tip = parameterAnnotation.tip();
                 }
                 paramInfo.currentValue = parameterAnnotation == null ? "" : parameterAnnotation.value();
-                paramInfo.parser = getParser(parameter.getType());
+                paramInfo.parser = StringUtil.getParser(parameter.getType());
                 this.params.add(paramInfo);
             }
         }
 
         public FuncInfo clone() {
             return new FuncInfo(func);
-        }
-
-        private Function<String, Object> getParser(Class<?> targetTypeClass) {
-            if (Boolean.class.equals(targetTypeClass) || boolean.class.equals(targetTypeClass)) {
-                return str -> {
-                    if (str.equals("1")) {
-                        return true;
-                    }
-                    if (str.equals("0")) {
-                        return false;
-                    }
-                    return Boolean.valueOf(str);
-                };
-            } else if (Integer.class.equals(targetTypeClass) || int.class.equals(targetTypeClass)) {
-                return Integer::valueOf;
-            } else if (Double.class.equals(targetTypeClass) || double.class.equals(targetTypeClass)) {
-                return Double::valueOf;
-            } else if (Float.class.equals(targetTypeClass) || float.class.equals(targetTypeClass)) {
-                return Float::valueOf;
-            } else if (Long.class.equals(targetTypeClass) || long.class.equals(targetTypeClass)) {
-                return Long::valueOf;
-            } else if (Short.class.equals(targetTypeClass) || short.class.equals(targetTypeClass)) {
-                return Short::valueOf;
-            } else if (Byte.class.equals(targetTypeClass) || byte.class.equals(targetTypeClass)) {
-                return Byte::valueOf;
-            } else if (BigInteger.class.equals(targetTypeClass)) {
-                return BigInteger::new;
-            } else {
-                return str -> str;
-            }
         }
 
         public String name() {
@@ -134,9 +115,8 @@ public class UtilHandler {
             System.out.println();
             System.out.println("func info:");
             List<List<String>> funcContent = Arrays.asList(
-                    Arrays.asList("    module", this.module()),
-                    Arrays.asList("    name", this.name()),
-                    Arrays.asList("    desc", this.desc)
+                    Arrays.asList("module", "name", "desc"),
+                    Arrays.asList(this.module(), this.name(), this.desc)
             );
             PrintUtil.println(funcContent);
 

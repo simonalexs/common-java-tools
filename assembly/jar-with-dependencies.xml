@@ -18,6 +18,11 @@
             <useProjectArtifact>true</useProjectArtifact>
             <unpack>true</unpack>
             <scope>runtime</scope>
+            <unpackOptions>
+                <excludes>
+                    <exclude>${user.config.file}</exclude>
+                </excludes>
+            </unpackOptions>
         </dependencySet>
     </dependencySets>
 </assembly>

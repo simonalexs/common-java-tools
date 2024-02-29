@@ -6,7 +6,7 @@ import io.github.simonalexs.tools.WinUtil;
 public class FileUtilTest {
 
     public static void main(String[] args) throws Exception {
-        String data = FileUtil.getContentInResource("/data");
+        String data = FileUtil.getContentInResourceOrSamePath("/data");
 
         StringBuilder builder = new StringBuilder();
         for (String table : data.split("\r\n")) {

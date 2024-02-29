@@ -1,0 +1,4 @@
+# 使用时实际配置文件中，请将文件名后缀"-template"去掉
+wxpusher.appToken: {appToken}
+# 逗号分隔
+wxpusher.sendUIds: {uidArray}

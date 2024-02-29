@@ -1,7 +1,7 @@
 package io.github.simonalexs.tools;
 
-import io.github.simonalexs.tools.annotation.Func;
-import io.github.simonalexs.tools.annotation.Param;
+import io.github.simonalexs.annotation.Func;
+import io.github.simonalexs.annotation.Param;
 import io.github.simonalexs.tools.other.PrintUtil;
 
 import java.awt.*;
