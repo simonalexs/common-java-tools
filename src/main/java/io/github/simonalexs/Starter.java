@@ -182,7 +182,7 @@ public class Starter {
                         return pageMap.get(paramOrder);
                     }
                     if (paramOrder <= 0 || paramOrder >= funcInfo.params.size()) {
-                        userTipAfterInput = "order is wrong";
+                        userTipAfterInput = "the input order [" + paramOrder + "] is wrong";
                         continue;
                     }
                     // 修改参数值

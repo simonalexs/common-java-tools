@@ -1,6 +1,7 @@
 package io.github.simonalexs.tools.other;
 
 
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import io.github.simonalexs.base.StaticVariables;
@@ -25,6 +26,12 @@ import static io.github.simonalexs.tools.other.PrintUtil.JDBCUtil.*;
  * 带有 时间、线程 代码位置 信息的print工具类
  */
 public class PrintUtil {
+    private static boolean PRINT_TIME_INFO = true;
+
+    public static void setPrintTimeInfo(boolean isPrint) {
+        PRINT_TIME_INFO = isPrint;
+    }
+
     public static <T extends ResultSet> void println(T resultSet) {
         println(resultSet, Integer.MAX_VALUE);
     }
@@ -149,14 +156,17 @@ public class PrintUtil {
     }
 
     public static void println(String msg) {
-        System.out.println("string");
         String info = wrap(toStr(msg));
         System.out.println(info);
     }
 
     public static void println(Object obj) {
-        System.out.println("object");
-        String objStr = JSON.toJSONString(obj, JSONWriter.Feature.PrettyFormat);
+        String objStr = JSON.toJSONString(obj,
+                JSONWriter.Feature.PrettyFormat,
+                JSONWriter.Feature.FieldBased,
+                JSONWriter.Feature.WriteBigDecimalAsPlain,
+                JSONWriter.Feature.WriteNulls,
+                JSONWriter.Feature.WriteMapNullValue);
         String info = wrap(toStr(objStr));
         System.out.println(info);
     }
@@ -194,6 +204,10 @@ public class PrintUtil {
     }
 
     private static String wrap(String msg) {
+        if (!PRINT_TIME_INFO) {
+            // 不添加额外信息
+            return msg;
+        }
         String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
         Thread currentThread = Thread.currentThread();
         // 获取调用该方法的调用方

@@ -1,13 +1,15 @@
 package io.github.simonalexs.config;
 
 
+import io.github.simonalexs.enums.SAPropertyEnum;
+import io.github.simonalexs.exceptions.ParamNotExistsException;
 import io.github.simonalexs.tools.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
-import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 读取用户的配置信息
@@ -30,7 +32,7 @@ public class ToolConfig {
             PROPERTY_FILE_TEMPLATE_CONTENT = FileUtil.getContentInResourceOrSamePath(separator + userConfigFileTemplateName);
 
             PROPERTY_FILE_NAME = properties.get("userConfigFileName").toString();
-            String userConfigStr = null;
+            String userConfigStr;
             try {
                 userConfigStr = FileUtil.getContentInResourceOrSamePath(separator + PROPERTY_FILE_NAME);
             } catch (Exception e) {
@@ -50,22 +52,46 @@ public class ToolConfig {
         }
     }
 
-    public static<T> T getParam(String key, Class<T> clazz) {
+    public static<T> T getParam(SAPropertyEnum keyEnum, Class<T> clazz) {
+        return getParam(keyEnum.getName(), clazz);
+    }
+
+    public static<T> T getParamAndCheck(SAPropertyEnum keyEnum, Class<T> clazz) {
+        return getParamAndCheck(keyEnum.getName(), clazz);
+    }
+
+    public static String getParamErrorInfo(SAPropertyEnum key) {
+        return getParamErrorInfo(key.getName());
+    }
+
+    public static Set<String> getUIdSetByStr(String sendUIdsStr) {
+        if (StringUtils.isBlank(sendUIdsStr)) {
+            return new HashSet<>();
+        }
+        List<?> uidsList = Arrays.asList(StringUtils.split(sendUIdsStr, ","));
+        return uidsList.stream()
+                .map(t -> t == null ? null : t.toString().trim())
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.toSet());
+    }
+
+    //region private
+    private static<T> T getParam(String key, Class<T> clazz) {
         Optional<String> keyOptional =
                 USER_CONFIG_MAP.keySet().stream().filter(t -> t.equalsIgnoreCase(key)).findFirst();
         if (!keyOptional.isPresent()) {
             return null;
         }
         String valueStr = USER_CONFIG_MAP.get(keyOptional.get());
-        if (valueStr == null || valueStr.trim().isEmpty()) {
+        if (valueStr == null || StringUtils.isBlank(valueStr)) {
             return null;
         }
         return parse(valueStr, clazz);
     }
 
-    public static<T> T getParamAndCheck(String key, Class<T> clazz) {
+    private static<T> T getParamAndCheck(String key, Class<T> clazz) {
         T value = getParam(key, clazz);
-        if (value == null || value.toString().trim().isEmpty()) {
+        if (value == null || StringUtils.isBlank(value.toString())) {
             throw new RuntimeException(getParamErrorInfo(key));
         }
         return value;
@@ -79,10 +105,11 @@ public class ToolConfig {
         }
     }
 
-    public static String getParamErrorInfo(String key) {
+    private static String getParamErrorInfo(String key) {
         return "Param [" + key + "] doesn't exist or is empty, please check the file '" + PROPERTY_FILE_NAME + "', " +
                 "which is the same path with the jar file or in resources.The template content of the file is:"
                 + System.lineSeparator()
                 + PROPERTY_FILE_TEMPLATE_CONTENT;
     }
+    //endregion
 }
