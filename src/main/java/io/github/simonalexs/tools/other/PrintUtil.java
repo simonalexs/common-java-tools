@@ -1,20 +1,18 @@
 package io.github.simonalexs.tools.other;
 
 
-import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
 import io.github.simonalexs.base.StaticVariables;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,10 +24,16 @@ import static io.github.simonalexs.tools.other.PrintUtil.JDBCUtil.*;
  * 带有 时间、线程 代码位置 信息的print工具类
  */
 public class PrintUtil {
+    /**
+     * print时是否输出 “时间、线程” 信息
+     */
     private static boolean PRINT_TIME_INFO = true;
 
     public static void setPrintTimeInfo(boolean isPrint) {
         PRINT_TIME_INFO = isPrint;
+    }
+    public static boolean isPrintTimeInfo() {
+        return PRINT_TIME_INFO;
     }
 
     public static <T extends ResultSet> void println(T resultSet) {
@@ -70,10 +74,6 @@ public class PrintUtil {
         }
     }
 
-    public static void println(List<?> objList) {
-        println("", "", "", objList);
-    }
-
     public static void println(List<?>... objList) {
         println("", objList);
     }
@@ -83,6 +83,9 @@ public class PrintUtil {
     }
 
     public static void println(String header, String lineSeparatorBetweenParam, String footer, List<?>... objList) {
+        if (objList == null) {
+            return;
+        }
         Pair<List<Integer>, String> columnWidthConfig = getColumnWidthConfig(objList);
         List<Integer> widthConfig = columnWidthConfig.getLeft();
         int wholeWidth = columnWidthConfig.getRight().length();
@@ -119,6 +122,28 @@ public class PrintUtil {
         System.out.println(builder);
     }
 
+    public static void println(Object... objs) {
+        println(false, objs);
+    }
+
+    public static void println(boolean prettyFormat, Object... objs) {
+        String str;
+        if (objs == null) {
+            str = toStr(false, null);
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < objs.length; i++) {
+                if (i != 0) {
+                    builder.append(" ");
+                }
+                builder.append(toStr(prettyFormat, objs[i]));
+            }
+            str = builder.toString();
+        }
+        String info = wrap(str);
+        System.out.println(info);
+    }
+
     public static Pair<List<Integer>, String> getColumnWidthConfig(List<?>... objList) {
         int realColumnCount = getRealColumnCount(objList);
         List<Integer> columnWidthConfig = IntStream.range(0, realColumnCount).boxed().map(t -> 0).collect(Collectors.toList());
@@ -135,9 +160,9 @@ public class PrintUtil {
         }
         int wholeWidth = 0;
         for (Integer width : columnWidthConfig) {
-            wholeWidth += width + columnIntervalWidth;
+            wholeWidth += width + COLUMN_INTERVAL_WIDTH;
         }
-        wholeWidth -= columnIntervalWidth;
+        wholeWidth -= COLUMN_INTERVAL_WIDTH;
         String seperatorStr = repeat("-", wholeWidth);
         return Pair.of(columnWidthConfig, seperatorStr);
     }
@@ -149,58 +174,10 @@ public class PrintUtil {
             String formatted = formatObj(row.get(i), columnWidthConfig.get(i));
             stringBuilder.append(formatted);
             if (i != row.size() - 1) {
-                stringBuilder.append(JDBCUtil.columnIntervalStr);
+                stringBuilder.append(JDBCUtil.COLUMN_INTERVAL_STR);
             }
         }
         return stringBuilder.toString();
-    }
-
-    public static void println(String msg) {
-        String info = wrap(toStr(msg));
-        System.out.println(info);
-    }
-
-    public static void println(Object obj) {
-        String objStr = JSON.toJSONString(obj,
-                JSONWriter.Feature.PrettyFormat,
-                JSONWriter.Feature.FieldBased,
-                JSONWriter.Feature.WriteBigDecimalAsPlain,
-                JSONWriter.Feature.WriteNulls,
-                JSONWriter.Feature.WriteMapNullValue);
-        String info = wrap(toStr(objStr));
-        System.out.println(info);
-    }
-
-    public static void println(Integer msg) {
-        println(toStr(msg));
-    }
-
-    public static void println(Double msg) {
-        println(toStr(msg));
-    }
-
-    public static void println(Float msg) {
-        println(toStr(msg));
-    }
-
-    public static void println(BigInteger msg) {
-        println(toStr(msg));
-    }
-
-    public static void println(Short msg) {
-        println(toStr(msg));
-    }
-
-    public static void println(Long msg) {
-        println(toStr(msg));
-    }
-
-    public static void println(Byte msg) {
-        println(toStr(msg));
-    }
-
-    public static void println(BigDecimal msg) {
-        println(toStr(msg));
     }
 
     private static String wrap(String msg) {
@@ -219,7 +196,22 @@ public class PrintUtil {
     }
 
     private static String toStr(Object value) {
-        return value == null ? "null" : value.toString();
+        return toStr(false, value);
+    }
+
+    private static String toStr(boolean prettyFormat, Object value) {
+        List<JSONWriter.Feature> featureList = Arrays.asList(JSONWriter.Feature.FieldBased,
+                JSONWriter.Feature.WriteBigDecimalAsPlain,
+                JSONWriter.Feature.WriteNulls,
+                JSONWriter.Feature.WriteMapNullValue);
+        if (prettyFormat) {
+            featureList.add(JSONWriter.Feature.PrettyFormat);
+        }
+        JSONWriter.Feature[] features = new JSONWriter.Feature[featureList.size()];
+        for (int i = 0; i < featureList.size(); i++) {
+            features[i] = featureList.get(i);
+        }
+        return JSON.toJSONString(value, features);
     }
 
     protected static class JDBCUtil {
@@ -271,8 +263,8 @@ public class PrintUtil {
             return repeat(WHITE_STR, widthConfig - width) + toStr(value);
         }
 
-        protected static final int columnIntervalWidth = 4;
-        protected static final String columnIntervalStr = repeat(" ", columnIntervalWidth);
+        protected static final int COLUMN_INTERVAL_WIDTH = 4;
+        protected static final String COLUMN_INTERVAL_STR = repeat(" ", COLUMN_INTERVAL_WIDTH);
         protected static final String WHITE_STR = " ";
 
         protected static void scanRowColumnWidth(List<?> row, List<Integer> columnWidthConfig) {
@@ -309,10 +301,7 @@ public class PrintUtil {
 
 
         protected static int getWidth(Object value) {
-            if (value == null) {
-                return 4;
-            }
-            return getWordCount(value.toString());
+            return getWordCount(toStr(value));
         }
 
         protected static String repeat(String str, int times) {
