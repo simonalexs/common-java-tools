@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,23 +26,41 @@ import static io.github.simonalexs.tools.other.PrintUtil.JDBCUtil.*;
  * 带有 时间、线程 代码位置 信息的print工具类
  */
 public class PrintUtil {
-    /**
-     * print时是否输出 “时间、线程” 信息
-     */
-    private static boolean PRINT_TIME_INFO = true;
-
-    public static void setPrintTimeInfo(boolean isPrint) {
-        PRINT_TIME_INFO = isPrint;
-    }
-    public static boolean isPrintTimeInfo() {
-        return PRINT_TIME_INFO;
+    public static void println(Object... objs) {
+        doPrint(objs, System.out::println);
     }
 
-    public static <T extends ResultSet> void println(T resultSet) {
-        println(resultSet, Integer.MAX_VALUE);
+    public static void print(Object... objs) {
+        doPrint(objs, System.out::print);
     }
 
-    public static <T extends ResultSet> void println(T resultSet, int printDataNum) {
+    public static void flush() {
+        System.out.flush();
+    }
+
+    private static void doPrint(Object[] objs, Consumer<String> printer) {
+        String str;
+        if (objs == null) {
+            str = toStr(false, null);
+        } else {
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < objs.length; i++) {
+                if (i != 0) {
+                    builder.append(" ");
+                }
+                builder.append(toStr(Config.PRETTY_PRINT, objs[i]));
+            }
+            str = builder.toString();
+        }
+        String info = wrap(str);
+        printer.accept(info);
+    }
+
+    public static void printResultSet(ResultSet resultSet) {
+        printResultSet(resultSet, Integer.MAX_VALUE);
+    }
+
+    public static void printResultSet(ResultSet resultSet, int printDataNum) {
         try {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -67,23 +87,27 @@ public class PrintUtil {
                 readiedNums++;
             }
             String resultSetStr = generateResultSetStr(colTypeNameList, dataList, colNameList);
+            String wrapInfo = wrap("");
+            if (!wrapInfo.isEmpty()) {
+                System.out.println(wrapInfo);
+            }
             System.out.println(resultSetStr);
-            System.out.println();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void println(List<?>... objList) {
-        println("", objList);
+    public static void printList(List<?>... objList) {
+        printList("", objList);
     }
 
-    public static void println(String lineSeparatorBetweenParam, List<?>... objList) {
-        println("", lineSeparatorBetweenParam, "", objList);
+    public static void printList(String lineSeparatorBetweenParam, List<?>... objList) {
+        printList("", lineSeparatorBetweenParam, "", objList);
     }
 
-    public static void println(String header, String lineSeparatorBetweenParam, String footer, List<?>... objList) {
-        if (objList == null) {
+    public static void printList(String header, String lineSeparatorBetweenParam, String footer, List<?>... objList) {
+        if (objList == null || objList.length == 0) {
+            println();
             return;
         }
         Pair<List<Integer>, String> columnWidthConfig = getColumnWidthConfig(objList);
@@ -119,29 +143,12 @@ public class PrintUtil {
             builder.append(repeat(footer, wholeWidth))
                     .append("\n");
         }
-        System.out.println(builder);
-    }
 
-    public static void println(Object... objs) {
-        println(false, objs);
-    }
-
-    public static void println(boolean prettyFormat, Object... objs) {
-        String str;
-        if (objs == null) {
-            str = toStr(false, null);
-        } else {
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < objs.length; i++) {
-                if (i != 0) {
-                    builder.append(" ");
-                }
-                builder.append(toStr(prettyFormat, objs[i]));
-            }
-            str = builder.toString();
+        String wrapInfo = wrap("");
+        if (!wrapInfo.isEmpty()) {
+            System.out.println(wrapInfo);
         }
-        String info = wrap(str);
-        System.out.println(info);
+        System.out.println(builder);
     }
 
     public static Pair<List<Integer>, String> getColumnWidthConfig(List<?>... objList) {
@@ -180,8 +187,8 @@ public class PrintUtil {
         return stringBuilder.toString();
     }
 
-    private static String wrap(String msg) {
-        if (!PRINT_TIME_INFO) {
+    public static String wrap(String msg) {
+        if (!Config.PRINT_TIME_INFO) {
             // 不添加额外信息
             return msg;
         }
@@ -200,10 +207,18 @@ public class PrintUtil {
     }
 
     private static String toStr(boolean prettyFormat, Object value) {
-        List<JSONWriter.Feature> featureList = Arrays.asList(JSONWriter.Feature.FieldBased,
+        if (value == null) {
+            return "null";
+        }
+        if (value instanceof String) {
+            return value.toString();
+        }
+        List<JSONWriter.Feature> featureList = new ArrayList<>(Arrays.asList(JSONWriter.Feature.FieldBased,
                 JSONWriter.Feature.WriteBigDecimalAsPlain,
                 JSONWriter.Feature.WriteNulls,
-                JSONWriter.Feature.WriteMapNullValue);
+                JSONWriter.Feature.WriteMapNullValue,
+                JSONWriter.Feature.UnquoteFieldName
+                ));
         if (prettyFormat) {
             featureList.add(JSONWriter.Feature.PrettyFormat);
         }
@@ -212,6 +227,33 @@ public class PrintUtil {
             features[i] = featureList.get(i);
         }
         return JSON.toJSONString(value, features);
+    }
+
+    public static class Config {
+        /**
+         * print时是否输出 “时间、线程” 信息
+         */
+        private static boolean PRINT_TIME_INFO = true;
+        /**
+         * print时是否美化输出格式（用于json格式输出对象）
+         */
+        private static boolean PRETTY_PRINT = false;
+
+        public static boolean isPrintTimeInfo() {
+            return PRINT_TIME_INFO;
+        }
+
+        public static void setPrintTimeInfo(boolean printTimeInfo) {
+            PRINT_TIME_INFO = printTimeInfo;
+        }
+
+        public static boolean isPrettyPrint() {
+            return PRETTY_PRINT;
+        }
+
+        public static void setPrettyPrint(boolean prettyPrint) {
+            PRETTY_PRINT = prettyPrint;
+        }
     }
 
     protected static class JDBCUtil {

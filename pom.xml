@@ -6,7 +6,7 @@
 
     <groupId>io.github.simonalexs</groupId>
     <artifactId>common-java-tools</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <description>common java tools</description>
     <url>https://github.com/simonalexs/common-java-tools</url>
@@ -75,6 +75,7 @@
             <version>${wxpusher-java-sdk.version}</version>
         </dependency>
 
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -110,7 +111,7 @@
                     <publishingServerId>central</publishingServerId>
                     <tokenAuth>true</tokenAuth>
                     <autoPublish>true</autoPublish>
-                    <waitUntil>published</waitUntil>
+                    <waitUntil>validated</waitUntil>
                     <ignorePublishedComponents>true</ignorePublishedComponents>
                 </configuration>
             </plugin>
