@@ -10,15 +10,6 @@ public class CollectionUtil {
     public static Object[] combineArray(Object... others) {
         return others;
     }
-//    public static Object[] combineArray(Object obj, Object... others) {
-//        return combineArray(new Object[]{obj}, others);
-//    }
-//
-//    public static Object[] combineArray(Object[] objs, Object... others) {
-//        List<Object> list1 = Arrays.stream(objs).collect(Collectors.toList());
-//        List<Object> list2 = Arrays.stream(others).collect(Collectors.toList());
-//        return combineCollection(list1, list2).toArray();
-//    }
 
     public static <T> List<T> combineCollection(Collection<T> c1, Collection<T> c2) {
         return combineCollection(Arrays.asList(c1, c2));

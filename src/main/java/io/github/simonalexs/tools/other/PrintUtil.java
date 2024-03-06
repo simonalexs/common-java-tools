@@ -11,12 +11,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -26,6 +22,8 @@ import static io.github.simonalexs.tools.other.PrintUtil.JDBCUtil.*;
  * 带有 时间、线程 代码位置 信息的print工具类
  */
 public class PrintUtil {
+    private static final String LINE_SEPARATOR = System.lineSeparator();
+    
     public static void println(Object... objs) {
         doPrint(objs, System.out::println);
     }
@@ -106,42 +104,54 @@ public class PrintUtil {
     }
 
     public static void printList(String header, String lineSeparatorBetweenParam, String footer, List<?>... objList) {
-        if (objList == null || objList.length == 0) {
+        if (objList == null) {
             println();
             return;
         }
         Pair<List<Integer>, String> columnWidthConfig = getColumnWidthConfig(objList);
         List<Integer> widthConfig = columnWidthConfig.getLeft();
         int wholeWidth = columnWidthConfig.getRight().length();
+        if (wholeWidth == 0) {
+            wholeWidth = 10;
+        }
 
         StringBuilder builder = new StringBuilder();
+        boolean hasPreData = false;
+        // header
         if (header != null && !header.isEmpty()) {
-            builder.append(repeat(header, wholeWidth))
-                    .append("\n");
+            builder.append(repeat(header, wholeWidth));
+            hasPreData = true;
         }
+        // content
         for (int i = 0; i < objList.length; i++) {
+            if (hasPreData) {
+                builder.append(LINE_SEPARATOR);
+            }
+            hasPreData = true;
             List<?> list = objList[i];
-            if (List.class.isAssignableFrom(list.get(0).getClass())) {
+            if (!list.isEmpty() && List.class.isAssignableFrom(list.get(0).getClass())) {
                 // 参数中的元素为list，也就是二维数组
                 for (Object rowObj : list) {
                     String rowStr = generateRowStr((List<?>) rowObj, widthConfig);
-                    builder.append(rowStr)
-                            .append("\n");
+                    builder.append(rowStr);
                 }
             } else {
                 // 参数中的元素为obj，也就是一维数组
                 String rowStr = generateRowStr(list, widthConfig);
-                builder.append(rowStr)
-                        .append("\n");
+                builder.append(rowStr);
             }
+            // line separator
             if (i < objList.length - 1 && lineSeparatorBetweenParam != null && !lineSeparatorBetweenParam.isEmpty()) {
-                builder.append(repeat(lineSeparatorBetweenParam, wholeWidth))
-                        .append("\n");
+                builder.append(LINE_SEPARATOR)
+                        .append(repeat(lineSeparatorBetweenParam, wholeWidth));
             }
         }
+        // footer
         if (footer != null && !footer.isEmpty()) {
-            builder.append(repeat(footer, wholeWidth))
-                    .append("\n");
+            if (hasPreData) {
+                builder.append(LINE_SEPARATOR);
+            }
+            builder.append(repeat(footer, wholeWidth));
         }
 
         String wrapInfo = wrap("");
@@ -155,7 +165,7 @@ public class PrintUtil {
         int realColumnCount = getRealColumnCount(objList);
         List<Integer> columnWidthConfig = IntStream.range(0, realColumnCount).boxed().map(t -> 0).collect(Collectors.toList());
         for (List<?> list : objList) {
-            if (List.class.isAssignableFrom(list.get(0).getClass())) {
+            if (!list.isEmpty() && List.class.isAssignableFrom(list.get(0).getClass())) {
                 // 参数中的元素为list
                 for (Object rowObj : list) {
                     scanRowColumnWidth((List<?>) rowObj, columnWidthConfig);
@@ -166,10 +176,12 @@ public class PrintUtil {
             }
         }
         int wholeWidth = 0;
-        for (Integer width : columnWidthConfig) {
-            wholeWidth += width + COLUMN_INTERVAL_WIDTH;
+        for (int i = 0; i < columnWidthConfig.size(); i++) {
+            wholeWidth += columnWidthConfig.get(i);
+            if (i != 0) {
+                wholeWidth += COLUMN_INTERVAL_WIDTH;
+            }
         }
-        wholeWidth -= COLUMN_INTERVAL_WIDTH;
         String seperatorStr = repeat("-", wholeWidth);
         return Pair.of(columnWidthConfig, seperatorStr);
     }
@@ -194,12 +206,32 @@ public class PrintUtil {
         }
         String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS"));
         Thread currentThread = Thread.currentThread();
-        // 获取调用该方法的调用方
-        StackTraceElement element = currentThread.getStackTrace()[2];
-        String fullClassName = element.getClassName();
+        StackTraceElement outerElement = getOuterStackTraceElement(currentThread);
+        String fullClassName = outerElement.getClassName();
         String simpleClassName = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-        return time + " 【" + currentThread.getName() + "】 "
-                + simpleClassName + "." + element.getMethodName() + "[" + element.getLineNumber() + "] " + msg;
+        return time + " [" + currentThread.getName() + "] "
+                + simpleClassName + "." + outerElement.getMethodName() + "[" + outerElement.getLineNumber() + "] " + msg;
+    }
+
+    /**
+     * 获取调用该方法的调用方
+     * @param currentThread 当前线程
+     * @return 该方法调用方的StackTraceElement
+     */
+    private static StackTraceElement getOuterStackTraceElement(Thread currentThread) {
+        StackTraceElement[] stackTraceElements = currentThread.getStackTrace();
+        StackTraceElement outerElement = null;
+        for (StackTraceElement element : stackTraceElements) {
+            if (!element.getClassName().equalsIgnoreCase(Thread.class.getName())
+                    && !element.getClassName().equalsIgnoreCase(PrintUtil.class.getName())) {
+                outerElement = element;
+                break;
+            }
+        }
+        if (outerElement == null) {
+            throw new RuntimeException("please use PrintUtil in other class, not in class 'PrintUtil'");
+        }
+        return outerElement;
     }
 
     private static String toStr(Object value) {
@@ -261,20 +293,20 @@ public class PrintUtil {
         static String generateResultSetStr(List<String> matadataList, List<List<Object>> rows, List<String> colNameList) {
             StringBuilder stringBuilder = new StringBuilder();
             Pair<List<Integer>, String> columnWidthPair = getColumnWidthConfig(matadataList, rows, colNameList);
-            String lineSeparator = columnWidthPair.getRight() + "\n";
+            String lineSeparator = columnWidthPair.getRight() + LINE_SEPARATOR;
 
             stringBuilder.append(lineSeparator);
             List<Integer> columnWidthConfig = columnWidthPair.getLeft();
             if (colNameList != null) {
                 // 列名
-                stringBuilder.append(generateRowStr(colNameList, columnWidthConfig)).append("\n");
+                stringBuilder.append(generateRowStr(colNameList, columnWidthConfig)).append(LINE_SEPARATOR);
             }
             // 列类型
-            stringBuilder.append(generateRowStr(matadataList, columnWidthConfig)).append("\n");
+            stringBuilder.append(generateRowStr(matadataList, columnWidthConfig)).append(LINE_SEPARATOR);
             stringBuilder.append(lineSeparator);
 
             for (List<Object> row : rows) {
-                stringBuilder.append(generateRowStr(row, columnWidthConfig)).append("\n");
+                stringBuilder.append(generateRowStr(row, columnWidthConfig)).append(LINE_SEPARATOR);
             }
             stringBuilder.append(lineSeparator);
 
@@ -320,25 +352,30 @@ public class PrintUtil {
         }
 
         protected static int getRealColumnCount(List<?>[] objList) {
-            int realColumnCount = 0;
+            ArrayList<Integer> countList = new ArrayList<>();
             for (List<?> list : objList) {
+                int columnCount;
                 if (!list.isEmpty() && List.class.isAssignableFrom(list.get(0).getClass())) {
                     // 参数中的元素为list
-                    int columnCount = ((List<?>) list.get(0)).size();
-                    if (realColumnCount != 0 && realColumnCount != columnCount) {
-                        throw new RuntimeException("参数中列数不一致，请检查各参数（单list与嵌套list）的列数是否一致");
-                    }
-                    realColumnCount = columnCount;
+                    columnCount = ((List<?>) list.get(0)).size();
                 } else {
                     // 参数中的元素为obj
-                    int columnCount = list.size();
-                    if (realColumnCount != 0 && realColumnCount != columnCount) {
-                        throw new RuntimeException("参数中列数不一致，请检查各参数（单list与嵌套list）的列数是否一致");
-                    }
-                    realColumnCount = columnCount;
+                    columnCount = list.size();
                 }
+                countList.add(columnCount);
             }
-            return realColumnCount;
+            countList.removeIf(t -> t == 0);
+            if (countList.isEmpty()) {
+                return 0;
+            }
+            if (countList.size() == 1) {
+                return countList.get(0);
+            }
+            // 校验列数是否一致
+            if (countList.stream().anyMatch(t -> !Objects.equals(t, countList.get(0)))) {
+                throw new RuntimeException("参数中列数不一致，请检查各参数（单list与嵌套list）的列数是否一致");
+            }
+            return countList.get(0);
         }
 
 
