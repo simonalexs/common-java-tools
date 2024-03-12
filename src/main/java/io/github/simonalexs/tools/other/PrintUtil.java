@@ -28,6 +28,13 @@ public class PrintUtil {
         doPrint(objs, System.out::println);
     }
 
+    public static void printlnPretty(Object... objs) {
+        boolean ori = Config.isPrettyPrint();
+        Config.setPrettyPrint(true);
+        doPrint(objs, System.out::println);
+        Config.setPrettyPrint(ori);
+    }
+
     public static void print(Object... objs) {
         doPrint(objs, System.out::print);
     }
@@ -248,11 +255,11 @@ public class PrintUtil {
         List<JSONWriter.Feature> featureList = new ArrayList<>(Arrays.asList(JSONWriter.Feature.FieldBased,
                 JSONWriter.Feature.WriteBigDecimalAsPlain,
                 JSONWriter.Feature.WriteNulls,
-                JSONWriter.Feature.WriteMapNullValue,
-                JSONWriter.Feature.UnquoteFieldName
+                JSONWriter.Feature.WriteMapNullValue
                 ));
         if (prettyFormat) {
             featureList.add(JSONWriter.Feature.PrettyFormat);
+            // TODO-high：研究如何利用ansi转义序列，美化json字符串的颜色。2024/03/12 10:27:48
         }
         JSONWriter.Feature[] features = new JSONWriter.Feature[featureList.size()];
         for (int i = 0; i < featureList.size(); i++) {

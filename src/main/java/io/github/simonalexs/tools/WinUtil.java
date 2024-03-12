@@ -39,11 +39,7 @@ public class WinUtil {
             @Param("2") int waitingSecondForStart,
             @Param("3") int checkPeriodSecond,
             @Param("2147483647") int wholeRunSecondsOfTool) {
-        long endTime = System.currentTimeMillis() + wholeRunSecondsOfTool * 1000L;
         Runnable runnable = () -> {
-            if (System.currentTimeMillis() >= endTime) {
-                throw new RuntimeException("时间到，任务停止");
-            }
             try {
                 if (!findProcess(pathOfApp)) {
                     if (!startApp(pathOfApp, waitingSecondForStart)) {
@@ -54,9 +50,7 @@ public class WinUtil {
                 throw new RuntimeException(e);
             }
         };
-
-        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-        service.scheduleAtFixedRate(runnable, 2, checkPeriodSecond, TimeUnit.SECONDS);
+        ScheduleUtil.runPeriodically(runnable, checkPeriodSecond * 1000, wholeRunSecondsOfTool * 1000);
     }
 
     /**
