@@ -1,4 +1,4 @@
-package io.github.simonalexs.tools;
+package io.github.simonalexs.tools.senders;
 
 import com.zjiecode.wxpusher.client.WxPusher;
 import com.zjiecode.wxpusher.client.bean.Message;
@@ -6,7 +6,6 @@ import com.zjiecode.wxpusher.client.bean.MessageResult;
 import com.zjiecode.wxpusher.client.bean.Result;
 import io.github.simonalexs.config.ToolConfig;
 import io.github.simonalexs.enums.SAPropertyEnum;
-import io.github.simonalexs.enums.WxPusherTypeEnum;
 import io.github.simonalexs.exceptions.MsgSendFailException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -86,5 +85,20 @@ public class WxPusherUtil {
             throw new MsgSendFailException(result.getMsg());
         }
         return result;
+    }
+
+    public enum WxPusherTypeEnum {
+        TEXT(Message.CONTENT_TYPE_TEXT),
+        HTML(Message.CONTENT_TYPE_HTML),
+        MD(Message.CONTENT_TYPE_MD);
+
+        final int value;
+        WxPusherTypeEnum(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 }

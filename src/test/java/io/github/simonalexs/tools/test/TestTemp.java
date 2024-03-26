@@ -3,6 +3,7 @@ package io.github.simonalexs.tools.test;
 import com.alibaba.fastjson.JSON;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 
 /**
  * @ClassName: TestTemp
@@ -13,6 +14,6 @@ import java.math.BigDecimal;
  */
 public class TestTemp {
     public static void main(String[] args) {
-        System.out.println(JSON.toJSONString(new BigDecimal("33.78")));
+        System.out.println(JSON.toJSONString(Arrays.asList("1", "2")));
     }
 }

@@ -6,7 +6,7 @@
 
     <groupId>io.github.simonalexs</groupId>
     <artifactId>common-java-tools</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
 
     <description>common java tools</description>
     <url>https://github.com/simonalexs/common-java-tools</url>
@@ -51,6 +51,9 @@
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <yaml.snakeyaml.version>2.2</yaml.snakeyaml.version>
         <wxpusher-java-sdk.version>2.1.4</wxpusher-java-sdk.version>
+        <tencentcloud-sdk-java.version>3.1.985</tencentcloud-sdk-java.version>
+        <commons-httpclient.version>3.1</commons-httpclient.version>
+        <qcloudsms.version>1.0.6</qcloudsms.version>
     </properties>
 
     <dependencies>
@@ -70,11 +73,27 @@
             <version>${yaml.snakeyaml.version}</version>
         </dependency>
         <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>${commons-httpclient.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.zjiecode</groupId>
             <artifactId>wxpusher-java-sdk</artifactId>
             <version>${wxpusher-java-sdk.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-common</artifactId>
+            <version>${tencentcloud-sdk-java.version}</version>
+        </dependency>
+        <!--    sms腾讯云短信发送，基于腾讯云的2.0版本sdk     -->
+        <dependency>
+            <groupId>com.github.qcloudsms</groupId>
+            <artifactId>qcloudsms</artifactId>
+            <version>${qcloudsms.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>

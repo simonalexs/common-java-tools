@@ -3,12 +3,13 @@ package io.github.simonalexs.tools.other;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONWriter;
-import io.github.simonalexs.base.StaticVariables;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -71,7 +72,7 @@ public class PrintUtil {
             int columnCount = metaData.getColumnCount();
             List<String> colTypeNameList = new ArrayList<>();
             for (int i = 1; i <= columnCount; i++) {
-                String typeName = StaticVariables.SQL_TYPES.get(metaData.getColumnType(i));
+                String typeName = SQL_TYPES.get(metaData.getColumnType(i));
                 colTypeNameList.add(typeName);
             }
 
@@ -405,6 +406,21 @@ public class PrintUtil {
                 }
             }
             return length;
+        }
+    }
+
+
+    private static final Map<Integer, String> SQL_TYPES = new HashMap<>();
+    static {
+        try {
+            Field[] fields = Types.class.getDeclaredFields();
+            for (Field field : fields) {
+                if (field.getType() == int.class) {
+                    SQL_TYPES.put((int) field.get(null), field.getName());
+                }
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 }

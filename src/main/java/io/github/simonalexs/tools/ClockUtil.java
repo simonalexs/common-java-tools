@@ -1,11 +1,5 @@
 package io.github.simonalexs.tools;
 
-import io.github.simonalexs.config.ToolConfig;
-import io.github.simonalexs.enums.NotifyTypeEnum;
-import io.github.simonalexs.enums.WxPusherTypeEnum;
-import io.github.simonalexs.exceptions.MsgSendFailException;
-import org.apache.commons.lang3.StringUtils;
-
 public class ClockUtil {
     // TODO-high：添加定时提醒功能。2024/02/29 09:49:28
     // TODO-high：要有一个传入function的方法，预设条件满足时再触发提醒。2024/02/29 09:49:44
@@ -18,4 +12,23 @@ public class ClockUtil {
     // 提醒方式：
     // 提醒的开始时间、提醒间隔、提醒的截止时间、如何远程停止本提醒
 
+
+    /*
+检测服务【检测频率，发送报警频率】：
+高频率检测（10秒一次，发送数据时，在文件里存储发送记录，每隔一小时发送一次报警。警报解除后也发送一次提示）：
+    检测rabbitmq数据目录是否有大量数据堆积，有的时候要报警
+    检测各服务端口是否正常（pg、redis、mongodb、后端的两个服务）
+低频率检测（1分钟一次？）：
+    检查磁盘剩余空间大小
+
+一件事情，可以设置多个报警配置
+【报警配置】
+1. 报警分类：限值报警
+             变化率报警（多长时间变化多少：周期、变化量）
+             偏差报警（目标值、偏差量）
+             自定义报警
+2. 报警级别（紧急、高级、低级、无）
+3. 检测频率
+4. 报警通知频率（状态变化时通知。状态不变时：按设置的通知频率进行通知）
+     */
 }

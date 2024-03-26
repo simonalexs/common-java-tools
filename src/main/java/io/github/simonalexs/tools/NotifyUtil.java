@@ -1,14 +1,15 @@
 package io.github.simonalexs.tools;
 
 import io.github.simonalexs.config.ToolConfig;
-import io.github.simonalexs.enums.NotifyTypeEnum;
 import io.github.simonalexs.enums.SAPropertyEnum;
-import io.github.simonalexs.enums.WxPusherTypeEnum;
 import io.github.simonalexs.exceptions.MsgSendFailException;
+import io.github.simonalexs.tools.senders.WxPusherUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class NotifyUtil {
     public static void notify(String summary, String content) throws MsgSendFailException {
@@ -47,12 +48,34 @@ public class NotifyUtil {
         if (StringUtils.isBlank(appToken) || StringUtils.isBlank(sendUIds)) {
             WxPusherUtil.sendMd(summary, content);
         } else {
-            WxPusherUtil.send(appToken, sendUIds, WxPusherTypeEnum.MD, summary, content);
+            WxPusherUtil.send(appToken, sendUIds, WxPusherUtil.WxPusherTypeEnum.MD, summary, content);
         }
     }
 
-    public static void notifyWechat(String appToken, String sendUIdsStr, WxPusherTypeEnum type,
+    public static void notifyWechat(String appToken, String sendUIdsStr, WxPusherUtil.WxPusherTypeEnum type,
                                     String summary, String content) throws MsgSendFailException {
         WxPusherUtil.send(appToken, sendUIdsStr, type, summary, content);
+    }
+
+    public enum NotifyTypeEnum {
+        WX_PUSHER, EMAIL, QQ, SMS_TENCENT;
+
+        private static final Map<String, NotifyTypeEnum> map = new LinkedHashMap<>();
+
+        static {
+            for (NotifyTypeEnum value : NotifyTypeEnum.values()) {
+                String replacedName = value.name().replaceAll("_", "");
+                map.put(value.name().toUpperCase(), value);
+                map.put(replacedName.toUpperCase(), value);
+            }
+        }
+
+        public static NotifyTypeEnum parse(String str) {
+            if (!map.containsKey(str.toUpperCase())) {
+                throw new RuntimeException("not support value [" + str + "].Supported notify enum value: "
+                        + String.join(", ", map.keySet()));
+            }
+            return map.get(str.toUpperCase());
+        }
     }
 }
