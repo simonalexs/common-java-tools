@@ -11,11 +11,14 @@ import java.util.List;
  * 扩展StopWatch，显示ms和s
  */
 public class StopWatchSingle {
-    private static final StopWatch singleStopWatch = new StopWatch();
+    private static StopWatch singleStopWatch = new StopWatch();
     private static final List<String> startLineInfos = new ArrayList<>();
     private static final List<String> endLineInfos = new ArrayList<>();
 
     public static String start(String taskName){
+        if (singleStopWatch.isRunning()) {
+            stop();
+        }
         singleStopWatch.start(taskName);
         startLineInfos.add(getCurrentCodeLineInfo());
         return "[任务：" + taskName + "]监测运行时间开始......";
@@ -26,11 +29,19 @@ public class StopWatchSingle {
     }
 
     public static void stop(){
-        singleStopWatch.stop();
-        endLineInfos.add(getCurrentCodeLineInfo());
+        if (singleStopWatch.isRunning()) {
+            singleStopWatch.stop();
+            endLineInfos.add(getCurrentCodeLineInfo());
+        }
     }
 
-    public static String print() {
+    public static void clear(){
+        singleStopWatch = new StopWatch();
+        startLineInfos.clear();
+        endLineInfos.clear();
+    }
+
+    public static void print() {
         // 获取运行的毫秒数与秒数
         double totalTimeNanos = singleStopWatch.getTotalTimeNanos();
         long totalTimeMillis = singleStopWatch.getTotalTimeMillis();
@@ -66,13 +77,15 @@ public class StopWatchSingle {
             );
             builder.addRowData(rowData);
         }
-        return builder.build().prettyPrint();
+        String prettyPrintStr = builder.build().prettyPrint();
+        System.out.println(prettyPrintStr);
     }
 
     private static String getCurrentCodeLineInfo(){
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         for (StackTraceElement stackTraceElement : stackTraceElements) {
-            if (!stackTraceElement.getClassName().endsWith(StopWatchSingle.class.getName())) {
+            if (!stackTraceElement.getClassName().endsWith(StopWatchSingle.class.getName())
+                && !stackTraceElement.getClassName().endsWith(Thread.class.getName())) {
                 return stackTraceElement.getClassName() + "#" + stackTraceElement.getMethodName() + "(" + stackTraceElement.getLineNumber() + ")";
             }
         }

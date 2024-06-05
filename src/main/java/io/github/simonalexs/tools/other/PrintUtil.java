@@ -23,8 +23,9 @@ import static io.github.simonalexs.tools.other.PrintUtil.JDBCUtil.*;
  * 带有 时间、线程 代码位置 信息的print工具类
  */
 public class PrintUtil {
+    private static final Class<PrintUtil> PRINT_UTIL_CLASS = PrintUtil.class;
     private static final String LINE_SEPARATOR = System.lineSeparator();
-    
+
     public static void println(Object... objs) {
         doPrint(objs, System.out::println);
     }
@@ -231,7 +232,7 @@ public class PrintUtil {
         StackTraceElement outerElement = null;
         for (StackTraceElement element : stackTraceElements) {
             if (!element.getClassName().equalsIgnoreCase(Thread.class.getName())
-                    && !element.getClassName().equalsIgnoreCase(PrintUtil.class.getName())) {
+                    && !element.getClassName().equalsIgnoreCase(PRINT_UTIL_CLASS.getName())) {
                 outerElement = element;
                 break;
             }
@@ -256,7 +257,8 @@ public class PrintUtil {
         List<JSONWriter.Feature> featureList = new ArrayList<>(Arrays.asList(JSONWriter.Feature.FieldBased,
                 JSONWriter.Feature.WriteBigDecimalAsPlain,
                 JSONWriter.Feature.WriteNulls,
-                JSONWriter.Feature.WriteMapNullValue
+                JSONWriter.Feature.WriteMapNullValue,
+                JSONWriter.Feature.WriteEnumsUsingName
                 ));
         if (prettyFormat) {
             featureList.add(JSONWriter.Feature.PrettyFormat);

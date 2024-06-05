@@ -8,15 +8,16 @@ package io.github.simonalexs.tools.test.algorithm;
  * @Version: 1.0
  */
 public class A {
-    private int A5 = 0;
+    private int A1 = 0;
     private int a2 = 0;
+    private int a3 = 0;
 
-    public int getA5() {
-        return A5;
+    public int getA1() {
+        return A1;
     }
 
-    public void setA5(int a5) {
-        this.A5 = a5;
+    public void setA1(int a1) {
+        this.A1 = a1;
     }
 
     public int getA2() {
@@ -25,5 +26,13 @@ public class A {
 
     public void setA2(int a2) {
         this.a2 = a2;
+    }
+
+    public int getA3() {
+        return a3;
+    }
+
+    public void setA3(int a3) {
+        this.a3 = a3;
     }
 }
