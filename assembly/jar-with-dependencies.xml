@@ -1,0 +1,28 @@
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" >
+    <id>portable</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <!--    设置为 true 之后在 fileset 里配置的 excludes 就不生效了。原因如下：https://www.e-learn.cn/topic/2393473
+            <fileSets> only targets files in this module (the one the assembly is tied to).
+            Since you specified <useProjectArtifact>true</useProjectArtifact>,
+            the dependency set will include this module as a dependency,
+            so that's why lanchecker.properties found its way into your assembly,
+            and that's why you have to exclude it from the dependency set as well
+             -->
+            <useProjectArtifact>true</useProjectArtifact>
+            <unpack>true</unpack>
+            <scope>runtime</scope>
+            <unpackOptions>
+                <excludes>
+                    <exclude>${user.config.file}</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+</assembly>

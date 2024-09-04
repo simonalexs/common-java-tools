@@ -1,0 +1,14 @@
+# 使用时实际配置文件中，请将文件名后缀"-template"去掉
+
+# 全局默认的wxpusher配置
+wxpusher.appToken: {appToken}
+# 逗号分隔
+wxpusher.sendUIds: {uidArray}
+
+# 不写则默认使用上面的全局wxpusher配置
+notify.wxpusher.appToken:
+# 逗号分隔。不写则默认使用上面的全局wxpusher配置
+notify.wxpusher.sendUIds:
+
+# 不写则默认使用wxpusher
+clock.notify.types:
