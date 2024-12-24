@@ -7,9 +7,42 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.SQLException;
 
 public class FileUtil {
+    public static String read(String filePath) {
+        try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                return "";
+            }
+            // 帮我读取文件的内容
+            return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public static void write(String filePath, String content) {
+        write(filePath, content, false);
+    }
+
+    public static void write(String filePath, String content, boolean append) {
+        try {
+            File file = new File(filePath);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fileWritter = new FileWriter(file, append);
+            fileWritter.write(content);
+            fileWritter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Func
     public static String getContentInResourceOrSamePath(@Param(tip = "path of file starting with '/'") String path) throws Exception {
         path = path.replaceAll("\r|\n|\r\n", "");

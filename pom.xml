@@ -60,9 +60,22 @@
         <commons-codec.version>1.16.1</commons-codec.version>
         <httpclient.version>4.5.14</httpclient.version>
         <sqlite.version>3.42.0.0</sqlite.version>
+        <hutool-all.version>5.8.25</hutool-all.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>ch.ethz.ganymed</groupId>
+            <artifactId>ganymed-ssh2</artifactId>
+            <version>build210</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool-all.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
