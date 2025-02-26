@@ -1,10 +1,9 @@
-package io.github.simonalexs.tools.test;
+package io.github.simonalexs.tools.test.senders;
 
 import com.github.qcloudsms.SmsSingleSenderResult;
 import io.github.simonalexs.tools.other.PrintUtil;
 import io.github.simonalexs.tools.senders.SmsUtil;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class SmsUtilTest {

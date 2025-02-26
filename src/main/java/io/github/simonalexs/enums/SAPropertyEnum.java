@@ -11,6 +11,9 @@ public enum SAPropertyEnum {
 
     CLOCK_NOTIFY_TYPES("clock.notify.types", NotifyUtil.NotifyTypeEnum.WX_PUSHER.name()),
 
+    DING_DING_ROBOT_WEBHOOK_SECRET("dingding.robot.webhook.secret"),
+    DING_DING_ROBOT_WEBHOOK_ACCESS_TOKEN("dingding.robot.webhook.access_token"),
+
     ;
     // TODO-high：将配置文件中的配置项名，设置到枚举中。2024/02/29 14:04:27
 

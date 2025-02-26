@@ -12,3 +12,8 @@ notify.wxpusher.sendUIds:
 
 # 不写则默认使用wxpusher
 clock.notify.types:
+
+# 钉钉机器人webhook的加签秘钥
+dingding.robot.webhook.secret:
+# 钉钉机器人webhook的token
+dingding.robot.webhook.access_token:

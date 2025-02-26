@@ -175,6 +175,19 @@
             <version>2.4</version>
             <classifier>jdk15</classifier>
         </dependency>
+
+        <!--    钉钉webhook机器人发消息    -->
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>alibaba-dingtalk-service-sdk</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.11</version>
+        </dependency>
+
     </dependencies>
 
     <!-- 这个也是必须要的 以下两个<id>代码块中的id要与 setting.xml中的id一致 -->
